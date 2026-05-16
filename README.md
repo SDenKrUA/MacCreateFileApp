@@ -33,13 +33,15 @@ macOS does not allow third-party apps to silently enable Finder extensions in ev
 
 ## Uninstall
 
-Before deleting the app, disable its Finder extension:
+Recommended:
 
 1. Open `Mac Create File.app`.
-2. Click `Disable Finder Extension`.
+2. Click `Uninstall Completely`.
 3. Move `Mac Create File.app` to Trash.
 
-The release zip also includes `uninstall.command`. You can run it to disable the Finder extension, restart Finder, and remove support files:
+This disables the Finder extension, restarts Finder, and removes support files. The app does not delete itself automatically.
+
+The release zip also includes `uninstall.command` as a fallback. Use it if the app was already deleted or cannot be opened:
 
 ```sh
 ./uninstall.command

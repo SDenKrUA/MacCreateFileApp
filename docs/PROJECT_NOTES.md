@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.14`.
+Latest implemented release in this checkout: `v1.0.15`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -113,6 +113,13 @@ Implemented in `v1.0.5`:
 - Uninstall instructions in both READMEs.
 - `uninstall.command` included in the release `.zip`.
 
+Updated in `v1.0.15`:
+
+- Main app includes an `Uninstall Completely` / `Видалити повністю` button.
+- The app-side uninstall flow disables the Finder extension, restarts Finder, removes logs/support files/legacy App Group files, removes the extension container where macOS allows it, and restarts `cfprefsd`.
+- The app does not delete itself from `/Applications`; after cleanup, the user should move `Mac Create File.app` to Trash.
+- `uninstall.command` remains in release packages as a fallback for cases where the app was already deleted or cannot be opened.
+
 Future polish ideas:
 
 1. Add a visible installed/enabled status indicator.
@@ -156,7 +163,7 @@ Updated in `v1.0.14`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.14 scripts/package_release.sh
+VERSION=1.0.15 scripts/package_release.sh
 ```
 
 ## Release Shape

@@ -8,7 +8,7 @@ struct MacCreateFileApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .frame(width: 520, height: 390)
+                .frame(width: 520, height: 450)
         }
         .windowResizability(.contentSize)
     }
@@ -46,6 +46,9 @@ struct ContentView: View {
                 }
                 ActionButton(title: String(localized: "button.restartFinder"), systemImage: "arrow.clockwise") {
                     restartFinder()
+                }
+                ActionButton(title: String(localized: "button.uninstall"), systemImage: "trash") {
+                    confirmUninstall()
                 }
             }
 
@@ -118,6 +121,54 @@ struct ContentView: View {
         statusMessage = result.isSuccess
             ? String(localized: "status.finderRestarted")
             : String(format: String(localized: "status.commandFailed"), result.output)
+    }
+
+    private func confirmUninstall() {
+        let alert = NSAlert()
+        alert.messageText = String(localized: "uninstall.confirmTitle")
+        alert.informativeText = String(localized: "uninstall.confirmMessage")
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: String(localized: "uninstall.confirmButton"))
+        alert.addButton(withTitle: String(localized: "uninstall.cancelButton"))
+
+        guard alert.runModal() == .alertFirstButtonReturn else {
+            statusMessage = String(localized: "status.uninstallCancelled")
+            return
+        }
+
+        uninstallCompletely()
+    }
+
+    private func uninstallCompletely() {
+        let extensionID = "com.sdenkrua.MacCreateFileApp.FinderExtension"
+        let appGroupID = "group.com.sdenkrua.MacCreateFileApp"
+        var failures: [String] = []
+
+        let commands: [(String, [String], Bool)] = [
+            ("/usr/bin/pluginkit", ["-e", "ignore", "-i", extensionID], true),
+            ("/usr/bin/killall", ["Finder"], true),
+            ("/bin/rm", ["-rf", NSHomeDirectory() + "/Library/Application Scripts/" + extensionID], true),
+            ("/bin/rm", ["-f", NSHomeDirectory() + "/Library/Logs/MacCreateFileApp.log"], true),
+            ("/bin/rm", ["-rf", NSHomeDirectory() + "/Library/Application Support/MacCreateFileApp"], true),
+            ("/bin/rm", ["-rf", NSHomeDirectory() + "/Library/Group Containers/" + appGroupID], true),
+            ("/bin/rm", ["-f", NSHomeDirectory() + "/Library/Preferences/" + appGroupID + ".plist"], true),
+            ("/bin/rm", ["-rf", NSHomeDirectory() + "/Library/Containers/" + extensionID], true),
+            ("/usr/bin/killall", ["cfprefsd"], true)
+        ]
+
+        for (executable, arguments, allowFailure) in commands {
+            let result = Shell.run(executable, arguments: arguments)
+            if !result.isSuccess && !allowFailure {
+                let command = ([executable] + arguments).joined(separator: " ")
+                failures.append("\(command): \(result.output)")
+            }
+        }
+
+        if failures.isEmpty {
+            statusMessage = String(localized: "status.uninstallReady")
+        } else {
+            statusMessage = String(format: String(localized: "status.uninstallPartial"), failures.joined(separator: "\n"))
+        }
     }
 }
 

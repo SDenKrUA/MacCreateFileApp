@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.15 - 2026-05-17
+
+- Added an `Uninstall Completely` button to the main app.
+- The uninstall flow disables the Finder extension, restarts Finder, removes support files, and clears legacy App Group leftovers.
+- Added a confirmation dialog and localized uninstall status messages.
+
 ## 1.0.14 - 2026-05-17
 
 - Replaced SF Symbol menu icons with custom-drawn outline icons.
