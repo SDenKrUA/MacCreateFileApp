@@ -136,16 +136,32 @@ struct ContentView: View {
 
 enum SharedSettings {
     private static let developerFileTypesKey = "showDeveloperFileTypes"
-    private static let appGroupID = "group.com.sdenkrua.MacCreateFileApp"
+
+    private static var settingsURL: URL {
+        URL(fileURLWithPath: NSHomeDirectoryForUser(NSUserName()) ?? NSHomeDirectory())
+            .appendingPathComponent("Library/Application Support/MacCreateFileApp/Settings.plist")
+    }
 
     static var showDeveloperFileTypes: Bool {
         get {
-            UserDefaults(suiteName: appGroupID)?.bool(forKey: developerFileTypesKey) ?? false
+            guard
+                let data = try? Data(contentsOf: settingsURL),
+                let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Bool]
+            else { return false }
+            return plist[developerFileTypesKey] ?? false
         }
         set {
-            let defaults = UserDefaults(suiteName: appGroupID)
-            defaults?.set(newValue, forKey: developerFileTypesKey)
-            defaults?.synchronize()
+            let plist = [developerFileTypesKey: newValue]
+            do {
+                try FileManager.default.createDirectory(
+                    at: settingsURL.deletingLastPathComponent(),
+                    withIntermediateDirectories: true
+                )
+                let data = try PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
+                try data.write(to: settingsURL, options: .atomic)
+            } catch {
+                NSLog("MacCreateFileApp: could not save settings: %@", error.localizedDescription)
+            }
         }
     }
 }

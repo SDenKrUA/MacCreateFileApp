@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.9 - 2026-05-16
+
+- Removed App Group entitlements to avoid macOS privacy warnings after toggling developer file types.
+- Restored shared developer-toggle storage to `~/Library/Application Support/MacCreateFileApp/Settings.plist`.
+- Kept Finder extension access through its existing absolute-path temporary exception.
+
 ## 1.0.8 - 2026-05-16
 
 - Fixed `Show developer file types` toggle sync between the main app and Finder extension.
