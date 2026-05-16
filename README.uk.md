@@ -63,13 +63,13 @@ scripts/install_local.sh
 ## Релізний пакет
 
 ```sh
-VERSION=1.0.3 scripts/package_release.sh
+VERSION=1.0.4 scripts/package_release.sh
 ```
 
 Файли релізу створюються у `dist/`:
 
 ```text
-MacCreateFile-1.0.3-mac-<arch>.zip
+MacCreateFile-1.0.4-mac-<arch>.zip
 ```
 
 ## Що всередині

@@ -36,11 +36,9 @@ final class FinderSync: FIFinderSync {
         for template in fileTypes {
             let item = NSMenuItem(
                 title: localized(template.nameKey),
-                action: #selector(createFile(_:)),
+                action: actionSelector(for: template.id),
                 keyEquivalent: ""
             )
-            item.target = self
-            item.representedObject = template.id
             createMenu.addItem(item)
         }
 
@@ -50,22 +48,92 @@ final class FinderSync: FIFinderSync {
         menu.addItem(.separator())
 
         let copyPathItem = NSMenuItem(title: localized("menu.copyPath"), action: #selector(copyPath(_:)), keyEquivalent: "")
-        copyPathItem.target = self
         menu.addItem(copyPathItem)
 
         let terminalItem = NSMenuItem(title: localized("menu.openTerminal"), action: #selector(openTerminal(_:)), keyEquivalent: "")
-        terminalItem.target = self
         menu.addItem(terminalItem)
 
         return menu
     }
 
-    @objc private func createFile(_ sender: NSMenuItem) {
-        guard
-            let id = sender.representedObject as? String,
-            let template = fileTypes.first(where: { $0.id == id })
-        else {
-            writeLog("createFile failed: missing menu item template")
+    @objc(createTextFile:)
+    func createTextFile(_ sender: NSMenuItem) {
+        createFile(withID: "txt")
+    }
+
+    @objc(createMarkdownFile:)
+    func createMarkdownFile(_ sender: NSMenuItem) {
+        createFile(withID: "md")
+    }
+
+    @objc(createRichTextFile:)
+    func createRichTextFile(_ sender: NSMenuItem) {
+        createFile(withID: "rtf")
+    }
+
+    @objc(createCSVFile:)
+    func createCSVFile(_ sender: NSMenuItem) {
+        createFile(withID: "csv")
+    }
+
+    @objc(createJSONFile:)
+    func createJSONFile(_ sender: NSMenuItem) {
+        createFile(withID: "json")
+    }
+
+    @objc(createHTMLFile:)
+    func createHTMLFile(_ sender: NSMenuItem) {
+        createFile(withID: "html")
+    }
+
+    @objc(createCSSFile:)
+    func createCSSFile(_ sender: NSMenuItem) {
+        createFile(withID: "css")
+    }
+
+    @objc(createJavaScriptFile:)
+    func createJavaScriptFile(_ sender: NSMenuItem) {
+        createFile(withID: "js")
+    }
+
+    @objc(createPythonFile:)
+    func createPythonFile(_ sender: NSMenuItem) {
+        createFile(withID: "py")
+    }
+
+    @objc(createSwiftFile:)
+    func createSwiftFile(_ sender: NSMenuItem) {
+        createFile(withID: "swift")
+    }
+
+    @objc(createShellScript:)
+    func createShellScript(_ sender: NSMenuItem) {
+        createFile(withID: "sh")
+    }
+
+    @objc(createPDFDocument:)
+    func createPDFDocument(_ sender: NSMenuItem) {
+        createFile(withID: "pdf")
+    }
+
+    @objc(createWordDocument:)
+    func createWordDocument(_ sender: NSMenuItem) {
+        createFile(withID: "docx")
+    }
+
+    @objc(createExcelWorkbook:)
+    func createExcelWorkbook(_ sender: NSMenuItem) {
+        createFile(withID: "xlsx")
+    }
+
+    @objc(createPowerPointPresentation:)
+    func createPowerPointPresentation(_ sender: NSMenuItem) {
+        createFile(withID: "pptx")
+    }
+
+    private func createFile(withID id: String) {
+        guard let template = fileTypes.first(where: { $0.id == id }) else {
+            writeLog("createFile failed: missing template id=\(id)")
             showError(FinderCreateError.missingTemplate)
             return
         }
@@ -96,7 +164,8 @@ final class FinderSync: FIFinderSync {
         }
     }
 
-    @objc private func copyPath(_ sender: NSMenuItem) {
+    @objc(copyPath:)
+    func copyPath(_ sender: NSMenuItem) {
         let urls = FIFinderSyncController.default().selectedItemURLs() ?? []
         let fallback = FIFinderSyncController.default().targetedURL().map { [$0] } ?? []
         let paths = (urls.isEmpty ? fallback : urls).map(\.path).joined(separator: "\n")
@@ -105,7 +174,8 @@ final class FinderSync: FIFinderSync {
         NSPasteboard.general.setString(paths, forType: .string)
     }
 
-    @objc private func openTerminal(_ sender: NSMenuItem) {
+    @objc(openTerminal:)
+    func openTerminal(_ sender: NSMenuItem) {
         guard let directory = targetDirectory() else { return }
         let script = "tell application \"Terminal\" to do script \"cd " + shellEscaped(directory.path) + "\""
         NSAppleScript(source: script)?.executeAndReturnError(nil)
@@ -130,6 +200,43 @@ final class FinderSync: FIFinderSync {
 
         writeLog("targetDirectory failed: selectedItemURLs, targetedURL, and Finder insertion location are empty")
         return nil
+    }
+
+    private func actionSelector(for id: String) -> Selector {
+        switch id {
+        case "txt":
+            return #selector(createTextFile(_:))
+        case "md":
+            return #selector(createMarkdownFile(_:))
+        case "rtf":
+            return #selector(createRichTextFile(_:))
+        case "csv":
+            return #selector(createCSVFile(_:))
+        case "json":
+            return #selector(createJSONFile(_:))
+        case "html":
+            return #selector(createHTMLFile(_:))
+        case "css":
+            return #selector(createCSSFile(_:))
+        case "js":
+            return #selector(createJavaScriptFile(_:))
+        case "py":
+            return #selector(createPythonFile(_:))
+        case "swift":
+            return #selector(createSwiftFile(_:))
+        case "sh":
+            return #selector(createShellScript(_:))
+        case "pdf":
+            return #selector(createPDFDocument(_:))
+        case "docx":
+            return #selector(createWordDocument(_:))
+        case "xlsx":
+            return #selector(createExcelWorkbook(_:))
+        case "pptx":
+            return #selector(createPowerPointPresentation(_:))
+        default:
+            return #selector(createTextFile(_:))
+        }
     }
 
     private func folderURL(for url: URL) -> URL {

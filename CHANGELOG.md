@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.4 - 2026-05-16
+
+- Replaced the generic menu action plus represented object with explicit Objective-C selectors for every file type.
+- Removed explicit menu item targets so Finder Sync dispatches actions to the extension principal object.
+- Fixed menu clicks that displayed the submenu but did not invoke file creation.
+
 ## 1.0.3 - 2026-05-16
 
 - Fixed silent failures when choosing a file type from the Finder submenu.
