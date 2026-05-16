@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.12 - 2026-05-16
+
+- Added a generated macOS app icon with a document and plus symbol.
+- Added a `doc.badge.plus` icon to the Finder `Create File` menu item.
+- Updated the build script to generate the app `.icns` during packaging.
+
 ## 1.0.11 - 2026-05-16
 
 - Removed the `Show developer file types` toggle from the main app.

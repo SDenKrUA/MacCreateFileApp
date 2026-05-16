@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.11`.
+Latest implemented release in this checkout: `v1.0.12`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -130,11 +130,20 @@ Finder always shows:
 
 This replaced the `v1.0.7` through `v1.0.10` toggle experiments, which either required Finder restarts, hit sandbox preference visibility issues, or triggered App Group privacy warnings.
 
+## Icons
+
+Implemented in `v1.0.12`:
+
+- App icon is generated during build by `scripts/generate_app_icon.swift`.
+- The generated app icon is written to `Contents/Resources/MacCreateFileAppIcon.icns`.
+- `Info-App.plist` uses `CFBundleIconFile = MacCreateFileAppIcon`.
+- Finder's top-level `Create File` extension menu item uses SF Symbol `doc.badge.plus`.
+
 ## Build Commands
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.11 scripts/package_release.sh
+VERSION=1.0.12 scripts/package_release.sh
 ```
 
 ## Release Shape

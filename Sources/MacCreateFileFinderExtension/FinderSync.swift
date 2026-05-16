@@ -60,6 +60,7 @@ final class FinderSync: FIFinderSync {
         createMenu.addItem(developerItem)
 
         let createItem = NSMenuItem(title: localized("menu.createFile"), action: nil, keyEquivalent: "")
+        createItem.image = NSImage(systemSymbolName: "doc.badge.plus", accessibilityDescription: localized("menu.createFile"))
         createItem.submenu = createMenu
         menu.addItem(createItem)
 
