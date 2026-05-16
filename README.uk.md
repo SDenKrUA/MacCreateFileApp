@@ -19,9 +19,9 @@ Mac Create File — це macOS утиліта, яка додає у Finder ме�
 
 ## Встановлення
 
-1. Завантаж `.dmg` з GitHub Releases.
-2. Відкрий `.dmg`.
-3. Перетягни `Mac Create File.app` у `Applications`.
+1. Завантаж `.zip` з GitHub Releases.
+2. Розпакуй його.
+3. Перемісти `Mac Create File.app` у `Applications`.
 4. Відкрий `Applications/Mac Create File.app`.
 5. Натисни `Увімкнути Finder Extension`.
 6. Натисни `Відкрити налаштування extension` і вручну увімкни `Mac Create File Finder Extension`, якщо macOS попросить це зробити.
@@ -63,14 +63,13 @@ scripts/install_local.sh
 ## Релізний пакет
 
 ```sh
-VERSION=1.0.0 scripts/package_release.sh
+VERSION=1.0.1 scripts/package_release.sh
 ```
 
 Файли релізу створюються у `dist/`:
 
 ```text
-MacCreateFile-1.0.0-mac-<arch>.zip
-MacCreateFile-1.0.0-mac-<arch>.dmg
+MacCreateFile-1.0.1-mac-<arch>.zip
 ```
 
 ## Що всередині

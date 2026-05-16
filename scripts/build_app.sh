@@ -38,9 +38,11 @@ swiftc \
   -target "$TARGET" \
   -module-name MacCreateFileFinderExtension \
   -parse-as-library \
-  -emit-library \
+  -emit-executable \
   -framework AppKit \
   -framework FinderSync \
+  -Xlinker -e \
+  -Xlinker _NSExtensionMain \
   "$ROOT_DIR/Sources/MacCreateFileFinderExtension/FinderSync.swift" \
   "$ROOT_DIR/Sources/MacCreateFileFinderExtension/MinimalFiles.swift" \
   -o "$EXT_MACOS/MacCreateFileFinderExtension"
@@ -50,7 +52,7 @@ cp "$ROOT_DIR/Info-Extension.plist" "$EXT_CONTENTS/Info.plist"
 cp -R "$ROOT_DIR/Resources/." "$APP_RESOURCES/"
 cp -R "$ROOT_DIR/ExtensionResources/." "$EXT_RESOURCES/"
 
-codesign --force --deep --sign "$SIGN_IDENTITY" "$EXT_BUNDLE"
-codesign --force --deep --sign "$SIGN_IDENTITY" "$APP_BUNDLE"
+codesign --force --sign "$SIGN_IDENTITY" --entitlements "$ROOT_DIR/Entitlements-Extension.plist" "$EXT_BUNDLE"
+codesign --force --sign "$SIGN_IDENTITY" --entitlements "$ROOT_DIR/Entitlements-App.plist" "$APP_BUNDLE"
 
 echo "Built: $APP_BUNDLE"

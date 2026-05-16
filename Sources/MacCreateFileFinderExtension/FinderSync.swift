@@ -1,6 +1,7 @@
 import AppKit
 import FinderSync
 
+@objc(FinderSync)
 final class FinderSync: FIFinderSync {
     private let fileTypes: [FileTemplate] = [
         .init(id: "txt", extensionName: "txt", nameKey: "file.text", baseNameKey: "filename.text", content: .text("")),

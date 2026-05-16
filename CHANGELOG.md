@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.1 - 2026-05-16
+
+- Changed release packaging to produce a `.zip` containing `Mac Create File.app` instead of a `.dmg`.
+- Fixed Finder extension registration by registering the bundled `.appex` before enabling it.
+- Built the Finder extension as a macOS app-extension executable instead of a shared library.
+- Added app and extension entitlements for macOS extension discovery and Finder actions.
+- Added clearer success and fallback status messages after enabling the extension.
+- Restart Finder automatically after enabling the extension.
+
 ## 1.0.0 - 2026-05-16
 
 - Created a new macOS Finder file-creation utility from scratch.

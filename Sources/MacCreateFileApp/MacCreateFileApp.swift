@@ -59,13 +59,41 @@ struct ContentView: View {
     }
 
     private func enableExtension() {
-        let result = Shell.run("/usr/bin/pluginkit", arguments: [
+        guard let extensionURL = Bundle.main.builtInPlugInsURL?
+            .appendingPathComponent("MacCreateFileFinderExtension.appex") else {
+            statusMessage = String(localized: "status.extensionMissing")
+            return
+        }
+
+        let registerResult = Shell.run("/usr/bin/pluginkit", arguments: [
+            "-a", extensionURL.path
+        ])
+
+        guard registerResult.isSuccess else {
+            statusMessage = String(format: String(localized: "status.commandFailed"), registerResult.output)
+            return
+        }
+
+        let enableResult = Shell.run("/usr/bin/pluginkit", arguments: [
             "-e", "use",
             "-i", "com.sdenkrua.MacCreateFileApp.FinderExtension"
         ])
-        statusMessage = result.isSuccess
-            ? String(localized: "status.extensionEnabled")
-            : String(format: String(localized: "status.commandFailed"), result.output)
+
+        guard enableResult.isSuccess else {
+            statusMessage = String(format: String(localized: "status.commandFailed"), enableResult.output)
+            return
+        }
+
+        _ = Shell.run("/usr/bin/killall", arguments: ["Finder"])
+
+        let statusResult = Shell.run("/usr/bin/pluginkit", arguments: [
+            "-m", "-v",
+            "-i", "com.sdenkrua.MacCreateFileApp.FinderExtension"
+        ])
+
+        statusMessage = statusResult.output.isEmpty
+            ? String(localized: "status.extensionEnabledNeedsSettings")
+            : String(localized: "status.extensionEnabled")
     }
 
     private func openExtensionSettings() {

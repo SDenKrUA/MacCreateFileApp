@@ -19,9 +19,9 @@ Mac Create File is a macOS utility that adds a Finder right-click menu for creat
 
 ## Install
 
-1. Download the latest `.dmg` from GitHub Releases.
-2. Open the `.dmg`.
-3. Drag `Mac Create File.app` to `Applications`.
+1. Download the latest `.zip` from GitHub Releases.
+2. Unzip it.
+3. Move `Mac Create File.app` to `Applications`.
 4. Open `Applications/Mac Create File.app`.
 5. Click `Enable Finder Extension`.
 6. Click `Open Extension Settings` and enable `Mac Create File Finder Extension` if macOS asks for manual confirmation.
@@ -63,14 +63,13 @@ scripts/install_local.sh
 ## Package a Release
 
 ```sh
-VERSION=1.0.0 scripts/package_release.sh
+VERSION=1.0.1 scripts/package_release.sh
 ```
 
 Release artifacts are created in `dist/`:
 
 ```text
-MacCreateFile-1.0.0-mac-<arch>.zip
-MacCreateFile-1.0.0-mac-<arch>.dmg
+MacCreateFile-1.0.1-mac-<arch>.zip
 ```
 
 ## Signing
