@@ -2,6 +2,7 @@
 set -u
 
 EXTENSION_ID="com.sdenkrua.MacCreateFileApp.FinderExtension"
+APP_GROUP_ID="group.com.sdenkrua.MacCreateFileApp"
 APP_PATH="/Applications/Mac Create File.app"
 
 echo "Disabling Mac Create File Finder extension..."
@@ -14,6 +15,8 @@ echo "Removing extension support files..."
 /bin/rm -rf "$HOME/Library/Application Scripts/$EXTENSION_ID"
 /bin/rm -f "$HOME/Library/Logs/MacCreateFileApp.log"
 /bin/rm -rf "$HOME/Library/Application Support/MacCreateFileApp"
+/bin/rm -rf "$HOME/Library/Group Containers/$APP_GROUP_ID"
+/bin/rm -f "$HOME/Library/Preferences/$APP_GROUP_ID.plist"
 
 CONTAINER_PATH="$HOME/Library/Containers/$EXTENSION_ID"
 if [ -d "$CONTAINER_PATH" ]; then

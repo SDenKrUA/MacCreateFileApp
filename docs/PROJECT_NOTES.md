@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.7`.
+Latest implemented release in this checkout: `v1.0.8`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -119,11 +119,20 @@ Future polish ideas:
 2. Add a one-click "Open Logs" button.
 3. Add a signed/notarized release pipeline.
 
+## Shared Settings (App + Extension)
+
+From `v1.0.8`, the `Show developer file types` toggle is shared through App Group defaults:
+
+- App Group ID: `group.com.sdenkrua.MacCreateFileApp`
+- Key: `showDeveloperFileTypes`
+
+This replaced `~/Library/Application Support/MacCreateFileApp/Settings.plist`, which could be unreadable for the sandboxed Finder extension.
+
 ## Build Commands
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.7 scripts/package_release.sh
+VERSION=1.0.8 scripts/package_release.sh
 ```
 
 ## Release Shape

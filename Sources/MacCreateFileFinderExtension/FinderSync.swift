@@ -397,17 +397,9 @@ enum FinderCreateError: LocalizedError {
 
 enum SharedSettings {
     private static let developerFileTypesKey = "showDeveloperFileTypes"
-
-    private static var settingsURL: URL {
-        URL(fileURLWithPath: NSHomeDirectoryForUser(NSUserName()) ?? NSHomeDirectory())
-            .appendingPathComponent("Library/Application Support/MacCreateFileApp/Settings.plist")
-    }
+    private static let appGroupID = "group.com.sdenkrua.MacCreateFileApp"
 
     static var showDeveloperFileTypes: Bool {
-        guard
-            let data = try? Data(contentsOf: settingsURL),
-            let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Bool]
-        else { return false }
-        return plist[developerFileTypesKey] ?? false
+        UserDefaults(suiteName: appGroupID)?.bool(forKey: developerFileTypesKey) ?? false
     }
 }

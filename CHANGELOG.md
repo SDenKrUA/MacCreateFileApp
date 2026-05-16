@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.8 - 2026-05-16
+
+- Fixed `Show developer file types` toggle sync between the main app and Finder extension.
+- Switched shared setting storage to App Group `UserDefaults` (`group.com.sdenkrua.MacCreateFileApp`).
+- Added app-side entitlements for App Group access and updated extension entitlements.
+- Updated uninstall script to remove App Group settings files.
+
 ## 1.0.7 - 2026-05-16
 
 - Simplified the default Create File submenu to Text, PDF, Word, Excel, and PowerPoint.
