@@ -1,0 +1,10 @@
+"app.title" = "Mac Create File";
+"app.subtitle" = "Додає у Finder меню правої кнопки для створення нових файлів у поточній папці.";
+"button.enableExtension" = "Увімкнути Finder Extension";
+"button.openSettings" = "Відкрити налаштування extension";
+"button.restartFinder" = "Перезапустити Finder";
+"status.ready" = "Відкрий налаштування extension, увімкни Mac Create File Finder Extension, потім натисни правою кнопкою в порожньому місці Finder.";
+"status.extensionEnabled" = "Команду ввімкнення extension надіслано. Якщо меню ще не зʼявилось, відкрий налаштування extension і увімкни його вручну.";
+"status.openedSettings" = "Системні налаштування відкрито. Увімкни Mac Create File Finder Extension у розділі Finder extensions.";
+"status.finderRestarted" = "Finder перезапущено. Спробуй натиснути правою кнопкою в папці.";
+"status.commandFailed" = "Команда завершилась з помилкою: %@";

@@ -1,0 +1,10 @@
+"app.title" = "Mac Create File";
+"app.subtitle" = "Adds a Finder right-click menu for creating new files in the current folder.";
+"button.enableExtension" = "Enable Finder Extension";
+"button.openSettings" = "Open Extension Settings";
+"button.restartFinder" = "Restart Finder";
+"status.ready" = "Open the extension settings, enable Mac Create File Finder Extension, then right-click an empty area in Finder.";
+"status.extensionEnabled" = "The extension enable command was sent. If the menu is still missing, open Extension Settings and enable it manually.";
+"status.openedSettings" = "System Settings opened. Enable Mac Create File Finder Extension under Finder extensions.";
+"status.finderRestarted" = "Finder was restarted. Try right-clicking in a folder.";
+"status.commandFailed" = "Command failed: %@";
