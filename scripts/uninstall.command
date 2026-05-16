@@ -13,6 +13,7 @@ echo "Restarting Finder..."
 echo "Removing extension support files..."
 /bin/rm -rf "$HOME/Library/Application Scripts/$EXTENSION_ID"
 /bin/rm -f "$HOME/Library/Logs/MacCreateFileApp.log"
+/bin/rm -rf "$HOME/Library/Application Support/MacCreateFileApp"
 
 CONTAINER_PATH="$HOME/Library/Containers/$EXTENSION_ID"
 if [ -d "$CONTAINER_PATH" ]; then

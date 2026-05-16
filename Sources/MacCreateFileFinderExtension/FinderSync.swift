@@ -8,6 +8,13 @@ final class FinderSync: FIFinderSync {
 
     private let fileTypes: [FileTemplate] = [
         .init(id: "txt", extensionName: "txt", nameKey: "file.text", baseNameKey: "filename.text", content: .text("")),
+        .init(id: "pdf", extensionName: "pdf", nameKey: "file.pdf", baseNameKey: "filename.pdf", content: .data(MinimalFiles.pdf)),
+        .init(id: "docx", extensionName: "docx", nameKey: "file.word", baseNameKey: "filename.word", content: .data(MinimalFiles.docx)),
+        .init(id: "xlsx", extensionName: "xlsx", nameKey: "file.excel", baseNameKey: "filename.excel", content: .data(MinimalFiles.xlsx)),
+        .init(id: "pptx", extensionName: "pptx", nameKey: "file.powerpoint", baseNameKey: "filename.powerpoint", content: .data(MinimalFiles.pptx))
+    ]
+
+    private let developerFileTypes: [FileTemplate] = [
         .init(id: "md", extensionName: "md", nameKey: "file.markdown", baseNameKey: "filename.markdown", content: .text("# New Document\n")),
         .init(id: "rtf", extensionName: "rtf", nameKey: "file.rtf", baseNameKey: "filename.rtf", content: .text("{\\rtf1\\ansi\\deff0\n}\n")),
         .init(id: "csv", extensionName: "csv", nameKey: "file.csv", baseNameKey: "filename.csv", content: .text("")),
@@ -17,11 +24,7 @@ final class FinderSync: FIFinderSync {
         .init(id: "js", extensionName: "js", nameKey: "file.javascript", baseNameKey: "filename.javascript", content: .text("")),
         .init(id: "py", extensionName: "py", nameKey: "file.python", baseNameKey: "filename.python", content: .text("")),
         .init(id: "swift", extensionName: "swift", nameKey: "file.swift", baseNameKey: "filename.swift", content: .text("import Foundation\n\n")),
-        .init(id: "sh", extensionName: "sh", nameKey: "file.shell", baseNameKey: "filename.shell", content: .text("#!/bin/sh\n")),
-        .init(id: "pdf", extensionName: "pdf", nameKey: "file.pdf", baseNameKey: "filename.pdf", content: .data(MinimalFiles.pdf)),
-        .init(id: "docx", extensionName: "docx", nameKey: "file.word", baseNameKey: "filename.word", content: .data(MinimalFiles.docx)),
-        .init(id: "xlsx", extensionName: "xlsx", nameKey: "file.excel", baseNameKey: "filename.excel", content: .data(MinimalFiles.xlsx)),
-        .init(id: "pptx", extensionName: "pptx", nameKey: "file.powerpoint", baseNameKey: "filename.powerpoint", content: .data(MinimalFiles.pptx))
+        .init(id: "sh", extensionName: "sh", nameKey: "file.shell", baseNameKey: "filename.shell", content: .text("#!/bin/sh\n"))
     ]
 
     override init() {
@@ -33,7 +36,7 @@ final class FinderSync: FIFinderSync {
         let menu = NSMenu(title: localized("menu.root"))
 
         let createMenu = NSMenu(title: localized("menu.createFile"))
-        for template in fileTypes {
+        for template in visibleFileTypes {
             let item = NSMenuItem(
                 title: localized(template.nameKey),
                 action: actionSelector(for: template.id),
@@ -131,7 +134,7 @@ final class FinderSync: FIFinderSync {
     }
 
     private func createFile(withID id: String) {
-        guard let template = fileTypes.first(where: { $0.id == id }) else {
+        guard let template = allFileTypes.first(where: { $0.id == id }) else {
             writeLog("createFile failed: missing template id=\(id)")
             showError(FinderCreateError.missingTemplate)
             return
@@ -236,6 +239,14 @@ final class FinderSync: FIFinderSync {
         default:
             return #selector(createTextFile(_:))
         }
+    }
+
+    private var visibleFileTypes: [FileTemplate] {
+        SharedSettings.showDeveloperFileTypes ? fileTypes + developerFileTypes : fileTypes
+    }
+
+    private var allFileTypes: [FileTemplate] {
+        fileTypes + developerFileTypes
     }
 
     private func folderURL(for url: URL) -> URL {
@@ -381,5 +392,22 @@ enum FinderCreateError: LocalizedError {
         case .createFileReturnedFalse(let path):
             return "The file could not be created at: \(path)"
         }
+    }
+}
+
+enum SharedSettings {
+    private static let developerFileTypesKey = "showDeveloperFileTypes"
+
+    private static var settingsURL: URL {
+        URL(fileURLWithPath: NSHomeDirectoryForUser(NSUserName()) ?? NSHomeDirectory())
+            .appendingPathComponent("Library/Application Support/MacCreateFileApp/Settings.plist")
+    }
+
+    static var showDeveloperFileTypes: Bool {
+        guard
+            let data = try? Data(contentsOf: settingsURL),
+            let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Bool]
+        else { return false }
+        return plist[developerFileTypesKey] ?? false
     }
 }

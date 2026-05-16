@@ -29,6 +29,7 @@ If the result starts with `-`, the extension is disabled.
 rm -rf "$HOME/Library/Application Scripts/com.sdenkrua.MacCreateFileApp.FinderExtension"
 rm -rf "$HOME/Library/Containers/com.sdenkrua.MacCreateFileApp.FinderExtension" 2>/dev/null || true
 rm -f "$HOME/Library/Logs/MacCreateFileApp.log"
+rm -rf "$HOME/Library/Application Support/MacCreateFileApp"
 killall cfprefsd
 ```
 

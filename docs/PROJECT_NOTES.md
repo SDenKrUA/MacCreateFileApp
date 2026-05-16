@@ -2,13 +2,20 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.6`.
+Latest implemented release in this checkout: `v1.0.7`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
 Supported file types:
 
 - `txt`
+- `pdf`
+- `docx`
+- `xlsx`
+- `pptx`
+
+Optional developer file types, shown only when the app toggle is enabled:
+
 - `md`
 - `rtf`
 - `csv`
@@ -19,10 +26,6 @@ Supported file types:
 - `py`
 - `swift`
 - `sh`
-- `pdf`
-- `docx`
-- `xlsx`
-- `pptx`
 
 ## Key Debug History
 
@@ -97,6 +100,7 @@ Optional cleanup:
 rm -rf "$HOME/Library/Application Scripts/com.sdenkrua.MacCreateFileApp.FinderExtension"
 rm -rf "$HOME/Library/Containers/com.sdenkrua.MacCreateFileApp.FinderExtension" 2>/dev/null || true
 rm -f "$HOME/Library/Logs/MacCreateFileApp.log"
+rm -rf "$HOME/Library/Application Support/MacCreateFileApp"
 killall cfprefsd
 ```
 
@@ -119,7 +123,7 @@ Future polish ideas:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.6 scripts/package_release.sh
+VERSION=1.0.7 scripts/package_release.sh
 ```
 
 ## Release Shape

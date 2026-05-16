@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.7 - 2026-05-16
+
+- Simplified the default Create File submenu to Text, PDF, Word, Excel, and PowerPoint.
+- Added a `Show developer file types` toggle in the main app.
+- Developer file types are hidden by default and can be shown when needed.
+- Added a shared settings file read by the main app and Finder extension.
+
 ## 1.0.6 - 2026-05-16
 
 - Removed the separator after the `Create File` menu item because Finder rendered it as an oversized blank space.
