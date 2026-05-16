@@ -45,7 +45,6 @@ final class FinderSync: FIFinderSync {
         let createItem = NSMenuItem(title: localized("menu.createFile"), action: nil, keyEquivalent: "")
         createItem.submenu = createMenu
         menu.addItem(createItem)
-        menu.addItem(.separator())
 
         let copyPathItem = NSMenuItem(title: localized("menu.copyPath"), action: #selector(copyPath(_:)), keyEquivalent: "")
         menu.addItem(copyPathItem)

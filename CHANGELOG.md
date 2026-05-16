@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.6 - 2026-05-16
+
+- Removed the separator after the `Create File` menu item because Finder rendered it as an oversized blank space.
+
 ## 1.0.5 - 2026-05-16
 
 - Added a `Disable Finder Extension` button to the main app.

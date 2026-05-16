@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.5`.
+Latest implemented release in this checkout: `v1.0.6`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -119,7 +119,7 @@ Future polish ideas:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.5 scripts/package_release.sh
+VERSION=1.0.6 scripts/package_release.sh
 ```
 
 ## Release Shape
