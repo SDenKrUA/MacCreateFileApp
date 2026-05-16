@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.9`.
+Latest implemented release in this checkout: `v1.0.10`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -121,18 +121,20 @@ Future polish ideas:
 
 ## Shared Settings (App + Extension)
 
-From `v1.0.9`, the `Show developer file types` toggle is shared through:
+From `v1.0.10`, the `Show developer file types` toggle is shared through the Finder extension preferences inside the extension sandbox container:
 
-- File: `~/Library/Application Support/MacCreateFileApp/Settings.plist`
+- File: `~/Library/Containers/com.sdenkrua.MacCreateFileApp.FinderExtension/Data/Library/Preferences/com.sdenkrua.MacCreateFileApp.FinderExtension.plist`
 - Key: `showDeveloperFileTypes`
 
-`v1.0.8` used App Group defaults, but that caused a macOS privacy warning when Finder loaded the extension menu after toggling the setting. App Group entitlements were removed in `v1.0.9`; the sandboxed Finder extension can read this settings file through its existing absolute-path temporary exception.
+`v1.0.8` used App Group defaults, but that caused a macOS privacy warning when Finder loaded the extension menu after toggling the setting. `v1.0.9` removed App Group entitlements but stored the value in Application Support, which the sandboxed extension did not reliably read. `v1.0.10` writes into the extension's own preferences file and the extension reads that file directly to avoid preferences daemon cache issues.
+
+The main app migrates the previous value from `~/Library/Application Support/MacCreateFileApp/Settings.plist` if the new extension preferences file does not exist yet.
 
 ## Build Commands
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.9 scripts/package_release.sh
+VERSION=1.0.10 scripts/package_release.sh
 ```
 
 ## Release Shape

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.10 - 2026-05-16
+
+- Fixed developer file type visibility without using App Group entitlements.
+- The main app now writes the toggle into the Finder extension preferences inside the extension sandbox container.
+- The Finder extension now reads the toggle directly from its own preferences file, avoiding the macOS App Group privacy warning and preferences daemon cache issues.
+- The main app migrates the previous developer-toggle value from the old Application Support settings file.
+
 ## 1.0.9 - 2026-05-16
 
 - Removed App Group entitlements to avoid macOS privacy warnings after toggling developer file types.

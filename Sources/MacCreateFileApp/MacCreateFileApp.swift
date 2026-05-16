@@ -136,33 +136,56 @@ struct ContentView: View {
 
 enum SharedSettings {
     private static let developerFileTypesKey = "showDeveloperFileTypes"
+    private static let extensionID = "com.sdenkrua.MacCreateFileApp.FinderExtension"
 
     private static var settingsURL: URL {
+        URL(fileURLWithPath: NSHomeDirectoryForUser(NSUserName()) ?? NSHomeDirectory())
+            .appendingPathComponent("Library/Containers/\(extensionID)/Data/Library/Preferences/\(extensionID).plist")
+    }
+
+    private static var legacySettingsURL: URL {
         URL(fileURLWithPath: NSHomeDirectoryForUser(NSUserName()) ?? NSHomeDirectory())
             .appendingPathComponent("Library/Application Support/MacCreateFileApp/Settings.plist")
     }
 
     static var showDeveloperFileTypes: Bool {
         get {
-            guard
-                let data = try? Data(contentsOf: settingsURL),
-                let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Bool]
-            else { return false }
-            return plist[developerFileTypesKey] ?? false
+            if let currentValue = readBool(from: settingsURL) {
+                return currentValue
+            }
+
+            if let legacyValue = readBool(from: legacySettingsURL) {
+                writeBool(legacyValue, to: settingsURL)
+                return legacyValue
+            }
+
+            return false
         }
         set {
-            let plist = [developerFileTypesKey: newValue]
-            do {
-                try FileManager.default.createDirectory(
-                    at: settingsURL.deletingLastPathComponent(),
-                    withIntermediateDirectories: true
-                )
-                let data = try PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
-                try data.write(to: settingsURL, options: .atomic)
-            } catch {
-                NSLog("MacCreateFileApp: could not save settings: %@", error.localizedDescription)
-            }
+            writeBool(newValue, to: settingsURL)
         }
+    }
+
+    private static func writeBool(_ value: Bool, to url: URL) {
+        let plist = [developerFileTypesKey: value]
+        do {
+            try FileManager.default.createDirectory(
+                at: url.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+            let data = try PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
+            try data.write(to: url, options: .atomic)
+        } catch {
+            NSLog("MacCreateFileApp: could not save settings: %@", error.localizedDescription)
+        }
+    }
+
+    private static func readBool(from url: URL) -> Bool? {
+        guard
+            let data = try? Data(contentsOf: url),
+            let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Bool]
+        else { return nil }
+        return plist[developerFileTypesKey]
     }
 }
 
