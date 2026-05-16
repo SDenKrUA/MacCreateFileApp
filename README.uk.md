@@ -30,6 +30,29 @@ Mac Create File — це macOS утиліта, яка додає у Finder ме�
 
 macOS не завжди дозволяє стороннім додаткам повністю автоматично вмикати Finder extensions, тому ручне підтвердження в System Settings може бути обовʼязковим.
 
+## Видалення
+
+Перед видаленням додатку спочатку вимкни Finder extension:
+
+1. Відкрий `Mac Create File.app`.
+2. Натисни `Вимкнути Finder Extension`.
+3. Перемісти `Mac Create File.app` у Trash.
+
+У release zip також є `uninstall.command`. Його можна запустити, щоб вимкнути Finder extension, перезапустити Finder і видалити службові файли:
+
+```sh
+./uninstall.command
+```
+
+macOS може залишити частину sandbox container metadata захищеною після видалення. Це не тримає меню Finder активним, якщо extension вже вимкнено.
+
+Якщо меню Finder залишилось після видалення додатку, виконай:
+
+```sh
+pluginkit -e ignore -i com.sdenkrua.MacCreateFileApp.FinderExtension
+killall Finder
+```
+
 ## Якщо macOS блокує запуск
 
 Локальна збірка підписується ad-hoc і не проходить Apple notarization. При першому запуску macOS може показати попередження про невідомого розробника.
@@ -63,13 +86,13 @@ scripts/install_local.sh
 ## Релізний пакет
 
 ```sh
-VERSION=1.0.4 scripts/package_release.sh
+VERSION=1.0.5 scripts/package_release.sh
 ```
 
 Файли релізу створюються у `dist/`:
 
 ```text
-MacCreateFile-1.0.4-mac-<arch>.zip
+MacCreateFile-1.0.5-mac-<arch>.zip
 ```
 
 ## Що всередині

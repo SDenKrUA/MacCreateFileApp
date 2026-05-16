@@ -30,6 +30,29 @@ Mac Create File is a macOS utility that adds a Finder right-click menu for creat
 
 macOS does not allow third-party apps to silently enable Finder extensions in every case. Manual confirmation in System Settings may be required.
 
+## Uninstall
+
+Before deleting the app, disable its Finder extension:
+
+1. Open `Mac Create File.app`.
+2. Click `Disable Finder Extension`.
+3. Move `Mac Create File.app` to Trash.
+
+The release zip also includes `uninstall.command`. You can run it to disable the Finder extension, restart Finder, and remove support files:
+
+```sh
+./uninstall.command
+```
+
+macOS may keep some sandbox container metadata protected after uninstall. That does not keep the Finder menu active once the extension is disabled.
+
+If the Finder menu remains after deleting the app, run:
+
+```sh
+pluginkit -e ignore -i com.sdenkrua.MacCreateFileApp.FinderExtension
+killall Finder
+```
+
 ## Gatekeeper Notice
 
 Local builds are ad-hoc signed by default and are not Apple-notarized. On first launch, macOS may block the app with an unidentified developer warning.
@@ -63,13 +86,13 @@ scripts/install_local.sh
 ## Package a Release
 
 ```sh
-VERSION=1.0.4 scripts/package_release.sh
+VERSION=1.0.5 scripts/package_release.sh
 ```
 
 Release artifacts are created in `dist/`:
 
 ```text
-MacCreateFile-1.0.4-mac-<arch>.zip
+MacCreateFile-1.0.5-mac-<arch>.zip
 ```
 
 ## Signing

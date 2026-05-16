@@ -8,7 +8,7 @@ struct MacCreateFileApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .frame(width: 520, height: 380)
+                .frame(width: 520, height: 440)
         }
         .windowResizability(.contentSize)
     }
@@ -37,6 +37,9 @@ struct ContentView: View {
             VStack(alignment: .leading, spacing: 12) {
                 ActionButton(title: String(localized: "button.enableExtension"), systemImage: "puzzlepiece.extension") {
                     enableExtension()
+                }
+                ActionButton(title: String(localized: "button.disableExtension"), systemImage: "puzzlepiece.extension.fill") {
+                    disableExtension()
                 }
                 ActionButton(title: String(localized: "button.openSettings"), systemImage: "gearshape") {
                     openExtensionSettings()
@@ -87,6 +90,21 @@ struct ContentView: View {
         _ = Shell.run("/usr/bin/killall", arguments: ["Finder"])
 
         statusMessage = String(localized: "status.extensionEnabled")
+    }
+
+    private func disableExtension() {
+        let disableResult = Shell.run("/usr/bin/pluginkit", arguments: [
+            "-e", "ignore",
+            "-i", "com.sdenkrua.MacCreateFileApp.FinderExtension"
+        ])
+
+        guard disableResult.isSuccess else {
+            statusMessage = String(format: String(localized: "status.commandFailed"), disableResult.output)
+            return
+        }
+
+        _ = Shell.run("/usr/bin/killall", arguments: ["Finder"])
+        statusMessage = String(localized: "status.extensionDisabled")
     }
 
     private func openExtensionSettings() {

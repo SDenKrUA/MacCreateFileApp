@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.5 - 2026-05-16
+
+- Added a `Disable Finder Extension` button to the main app.
+- Added `scripts/uninstall.command` for disabling the Finder extension and cleaning support files.
+- Updated release packaging so the zip contains both `Mac Create File.app` and `uninstall.command`.
+- Added uninstall documentation to English and Ukrainian READMEs.
+- Added project/agent notes for future maintenance.
+
 ## 1.0.4 - 2026-05-16
 
 - Replaced the generic menu action plus represented object with explicit Objective-C selectors for every file type.
