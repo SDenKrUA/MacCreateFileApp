@@ -60,14 +60,16 @@ final class FinderSync: FIFinderSync {
         createMenu.addItem(developerItem)
 
         let createItem = NSMenuItem(title: localized("menu.createFile"), action: nil, keyEquivalent: "")
-        createItem.image = NSImage(systemSymbolName: "doc.badge.plus", accessibilityDescription: localized("menu.createFile"))
+        createItem.image = menuIcon(systemName: "doc.badge.plus", accessibilityKey: "menu.createFile")
         createItem.submenu = createMenu
         menu.addItem(createItem)
 
         let copyPathItem = NSMenuItem(title: localized("menu.copyPath"), action: #selector(copyPath(_:)), keyEquivalent: "")
+        copyPathItem.image = menuIcon(systemName: "doc.on.doc", accessibilityKey: "menu.copyPath")
         menu.addItem(copyPathItem)
 
         let terminalItem = NSMenuItem(title: localized("menu.openTerminal"), action: #selector(openTerminal(_:)), keyEquivalent: "")
+        terminalItem.image = menuIcon(systemName: "terminal", accessibilityKey: "menu.openTerminal")
         menu.addItem(terminalItem)
 
         return menu
@@ -194,8 +196,25 @@ final class FinderSync: FIFinderSync {
     @objc(openTerminal:)
     func openTerminal(_ sender: NSMenuItem) {
         guard let directory = targetDirectory() else { return }
-        let script = "tell application \"Terminal\" to do script \"cd " + shellEscaped(directory.path) + "\""
-        NSAppleScript(source: script)?.executeAndReturnError(nil)
+        writeLog("openTerminal target directory=\(directory.path)")
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+        process.arguments = ["-a", "Terminal", directory.path]
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+            if process.terminationStatus == 0 {
+                writeLog("openTerminal success")
+            } else {
+                writeLog("openTerminal failed status=\(process.terminationStatus)")
+                showError(FinderCreateError.openTerminalFailed(directory.path))
+            }
+        } catch {
+            writeLog("openTerminal failed: \(error.localizedDescription)")
+            showError(error)
+        }
     }
 
     private func targetDirectory() -> URL? {
@@ -260,6 +279,12 @@ final class FinderSync: FIFinderSync {
         fileTypes + developerFileTypes
     }
 
+    private func menuIcon(systemName: String, accessibilityKey: String) -> NSImage? {
+        let image = NSImage(systemSymbolName: systemName, accessibilityDescription: localized(accessibilityKey))
+        image?.isTemplate = true
+        return image
+    }
+
     private func folderURL(for url: URL) -> URL {
         var isDirectory: ObjCBool = false
         if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue {
@@ -300,6 +325,8 @@ final class FinderSync: FIFinderSync {
             return localized("error.missingTargetDirectory")
         case .createFileReturnedFalse(let path):
             return String(format: localized("error.createReturnedFalse"), path)
+        case .openTerminalFailed(let path):
+            return String(format: localized("error.openTerminalFailed"), path)
         }
     }
 
@@ -357,9 +384,6 @@ final class FinderSync: FIFinderSync {
         Bundle.main.localizedString(forKey: key, value: key, table: nil)
     }
 
-    private func shellEscaped(_ path: String) -> String {
-        "'" + path.replacingOccurrences(of: "'", with: "'\\''") + "'"
-    }
 }
 
 struct FileTemplate {
@@ -393,6 +417,7 @@ enum FinderCreateError: LocalizedError {
     case missingTemplate
     case missingTargetDirectory
     case createFileReturnedFalse(String)
+    case openTerminalFailed(String)
 
     var errorDescription: String? {
         switch self {
@@ -402,6 +427,8 @@ enum FinderCreateError: LocalizedError {
             return "Finder did not provide a target folder. Open a Finder folder window and try right-clicking inside the file list area."
         case .createFileReturnedFalse(let path):
             return "The file could not be created at: \(path)"
+        case .openTerminalFailed(let path):
+            return "Terminal could not be opened at: \(path)"
         }
     }
 }

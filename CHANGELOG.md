@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.13 - 2026-05-16
+
+- Made Finder menu icons template images so they adapt to light and dark mode.
+- Added icons to `Copy Path` and `Open Terminal Here`.
+- Changed `Open Terminal Here` to use `/usr/bin/open -a Terminal` instead of AppleScript.
+- Added localized error text and logs for Terminal launch failures.
+
 ## 1.0.12 - 2026-05-16
 
 - Added a generated macOS app icon with a document and plus symbol.

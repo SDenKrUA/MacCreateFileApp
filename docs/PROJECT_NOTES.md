@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.12`.
+Latest implemented release in this checkout: `v1.0.13`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -139,11 +139,18 @@ Implemented in `v1.0.12`:
 - `Info-App.plist` uses `CFBundleIconFile = MacCreateFileAppIcon`.
 - Finder's top-level `Create File` extension menu item uses SF Symbol `doc.badge.plus`.
 
+Updated in `v1.0.13`:
+
+- Finder menu icons are template images so macOS can tint them for light/dark mode.
+- `Copy Path` uses `doc.on.doc`.
+- `Open Terminal Here` uses `terminal`.
+- `Open Terminal Here` launches Terminal through `/usr/bin/open -a Terminal <folder>` instead of AppleScript.
+
 ## Build Commands
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.12 scripts/package_release.sh
+VERSION=1.0.13 scripts/package_release.sh
 ```
 
 ## Release Shape
