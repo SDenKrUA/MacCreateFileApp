@@ -60,16 +60,16 @@ final class FinderSync: FIFinderSync {
         createMenu.addItem(developerItem)
 
         let createItem = NSMenuItem(title: localized("menu.createFile"), action: nil, keyEquivalent: "")
-        createItem.image = menuIcon(systemName: "doc.badge.plus", accessibilityKey: "menu.createFile")
+        createItem.image = menuIcon(.createFile)
         createItem.submenu = createMenu
         menu.addItem(createItem)
 
         let copyPathItem = NSMenuItem(title: localized("menu.copyPath"), action: #selector(copyPath(_:)), keyEquivalent: "")
-        copyPathItem.image = menuIcon(systemName: "doc.on.doc", accessibilityKey: "menu.copyPath")
+        copyPathItem.image = menuIcon(.copyPath)
         menu.addItem(copyPathItem)
 
         let terminalItem = NSMenuItem(title: localized("menu.openTerminal"), action: #selector(openTerminal(_:)), keyEquivalent: "")
-        terminalItem.image = menuIcon(systemName: "terminal", accessibilityKey: "menu.openTerminal")
+        terminalItem.image = menuIcon(.terminal)
         menu.addItem(terminalItem)
 
         return menu
@@ -279,10 +279,74 @@ final class FinderSync: FIFinderSync {
         fileTypes + developerFileTypes
     }
 
-    private func menuIcon(systemName: String, accessibilityKey: String) -> NSImage? {
-        let image = NSImage(systemSymbolName: systemName, accessibilityDescription: localized(accessibilityKey))
-        image?.isTemplate = true
+    private func menuIcon(_ kind: MenuIconKind) -> NSImage {
+        let size = NSSize(width: 16, height: 16)
+        let image = NSImage(size: size)
+        image.lockFocus()
+
+        let isDarkMode = NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+        let color = isDarkMode
+            ? NSColor(calibratedWhite: 0.92, alpha: 1.0)
+            : NSColor(calibratedWhite: 0.12, alpha: 1.0)
+        color.setStroke()
+
+        let lineWidth: CGFloat = 1.7
+        switch kind {
+        case .createFile:
+            drawDocument(in: CGRect(x: 3.0, y: 2.0, width: 8.0, height: 12.0), lineWidth: lineWidth)
+            let plus = NSBezierPath()
+            plus.lineWidth = lineWidth
+            plus.lineCapStyle = .round
+            plus.move(to: CGPoint(x: 12.2, y: 4.0))
+            plus.line(to: CGPoint(x: 12.2, y: 10.0))
+            plus.move(to: CGPoint(x: 9.2, y: 7.0))
+            plus.line(to: CGPoint(x: 15.0, y: 7.0))
+            plus.stroke()
+        case .copyPath:
+            drawDocument(in: CGRect(x: 5.0, y: 3.0, width: 8.0, height: 10.0), lineWidth: lineWidth)
+            drawDocument(in: CGRect(x: 2.5, y: 1.0, width: 8.0, height: 10.0), lineWidth: lineWidth)
+        case .terminal:
+            let window = NSBezierPath(roundedRect: CGRect(x: 1.5, y: 3.0, width: 13.0, height: 10.0), xRadius: 1.8, yRadius: 1.8)
+            window.lineWidth = lineWidth
+            window.stroke()
+
+            let prompt = NSBezierPath()
+            prompt.lineWidth = lineWidth
+            prompt.lineCapStyle = .round
+            prompt.lineJoinStyle = .round
+            prompt.move(to: CGPoint(x: 4.0, y: 6.0))
+            prompt.line(to: CGPoint(x: 6.2, y: 8.0))
+            prompt.line(to: CGPoint(x: 4.0, y: 10.0))
+            prompt.move(to: CGPoint(x: 8.2, y: 6.0))
+            prompt.line(to: CGPoint(x: 11.5, y: 6.0))
+            prompt.stroke()
+        }
+
+        image.unlockFocus()
+        image.accessibilityDescription = localized(kind.accessibilityKey)
         return image
+    }
+
+    private func drawDocument(in rect: CGRect, lineWidth: CGFloat) {
+        let fold: CGFloat = 2.4
+        let path = NSBezierPath()
+        path.lineWidth = lineWidth
+        path.lineJoinStyle = .round
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.line(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.line(to: CGPoint(x: rect.maxX - fold, y: rect.maxY))
+        path.line(to: CGPoint(x: rect.maxX, y: rect.maxY - fold))
+        path.line(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.close()
+        path.stroke()
+
+        let foldPath = NSBezierPath()
+        foldPath.lineWidth = lineWidth
+        foldPath.lineJoinStyle = .round
+        foldPath.move(to: CGPoint(x: rect.maxX - fold, y: rect.maxY))
+        foldPath.line(to: CGPoint(x: rect.maxX - fold, y: rect.maxY - fold))
+        foldPath.line(to: CGPoint(x: rect.maxX, y: rect.maxY - fold))
+        foldPath.stroke()
     }
 
     private func folderURL(for url: URL) -> URL {
@@ -392,6 +456,23 @@ struct FileTemplate {
     let nameKey: String
     let baseNameKey: String
     let content: FileContent
+}
+
+enum MenuIconKind {
+    case createFile
+    case copyPath
+    case terminal
+
+    var accessibilityKey: String {
+        switch self {
+        case .createFile:
+            return "menu.createFile"
+        case .copyPath:
+            return "menu.copyPath"
+        case .terminal:
+            return "menu.openTerminal"
+        }
+    }
 }
 
 enum FileContent {

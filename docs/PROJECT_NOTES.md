@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.13`.
+Latest implemented release in this checkout: `v1.0.14`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -146,11 +146,17 @@ Updated in `v1.0.13`:
 - `Open Terminal Here` uses `terminal`.
 - `Open Terminal Here` launches Terminal through `/usr/bin/open -a Terminal <folder>` instead of AppleScript.
 
+Updated in `v1.0.14`:
+
+- Finder Sync did not tint SF Symbol menu icons reliably in dark mode.
+- The extension now draws its own 16x16 outline menu icons.
+- Icon stroke color is selected from `NSApp.effectiveAppearance`: light stroke in dark mode, dark stroke in light mode.
+
 ## Build Commands
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.13 scripts/package_release.sh
+VERSION=1.0.14 scripts/package_release.sh
 ```
 
 ## Release Shape

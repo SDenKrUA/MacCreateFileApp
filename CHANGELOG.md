@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.14 - 2026-05-17
+
+- Replaced SF Symbol menu icons with custom-drawn outline icons.
+- Menu icons now choose a light or dark stroke color from the current macOS appearance.
+- Fixed black Finder extension menu icons being unreadable in dark mode.
+
 ## 1.0.13 - 2026-05-16
 
 - Made Finder menu icons template images so they adapt to light and dark mode.
