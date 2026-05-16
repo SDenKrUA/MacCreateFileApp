@@ -3,6 +3,9 @@
 "menu.copyPath" = "Скопіювати шлях";
 "menu.openTerminal" = "Відкрити Terminal тут";
 "error.createFailed" = "Не вдалося створити файл";
+"error.missingTemplate" = "Не вдалося визначити вибраний тип файлу.";
+"error.missingTargetDirectory" = "Finder не передав цільову папку. Відкрий вікно Finder з папкою і натисни правою кнопкою всередині списку файлів.";
+"error.createReturnedFalse" = "Не вдалося створити файл тут: %@";
 "file.text" = "Текстовий файл";
 "file.markdown" = "Markdown файл";
 "file.rtf" = "Rich Text файл";

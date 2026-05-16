@@ -3,6 +3,9 @@ import FinderSync
 
 @objc(FinderSync)
 final class FinderSync: FIFinderSync {
+    private let logFileURL = URL(fileURLWithPath: NSHomeDirectoryForUser(NSUserName()) ?? NSHomeDirectory())
+        .appendingPathComponent("Library/Logs/MacCreateFileApp.log")
+
     private let fileTypes: [FileTemplate] = [
         .init(id: "txt", extensionName: "txt", nameKey: "file.text", baseNameKey: "filename.text", content: .text("")),
         .init(id: "md", extensionName: "md", nameKey: "file.markdown", baseNameKey: "filename.markdown", content: .text("# New Document\n")),
@@ -60,19 +63,35 @@ final class FinderSync: FIFinderSync {
     @objc private func createFile(_ sender: NSMenuItem) {
         guard
             let id = sender.representedObject as? String,
-            let template = fileTypes.first(where: { $0.id == id }),
-            let directory = targetDirectory()
-        else { return }
+            let template = fileTypes.first(where: { $0.id == id })
+        else {
+            writeLog("createFile failed: missing menu item template")
+            showError(FinderCreateError.missingTemplate)
+            return
+        }
+
+        writeLog("createFile selected type=\(template.extensionName)")
+
+        guard let directory = targetDirectory() else {
+            writeLog("createFile failed: no target directory from Finder")
+            showError(FinderCreateError.missingTargetDirectory)
+            return
+        }
+
+        writeLog("createFile target directory=\(directory.path)")
 
         let destination = uniqueURL(in: directory, baseName: localized(template.baseNameKey), extensionName: template.extensionName)
+        writeLog("createFile destination=\(destination.path)")
 
         do {
             try template.content.write(to: destination)
             if template.extensionName == "sh" {
                 try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: destination.path)
             }
+            writeLog("createFile success path=\(destination.path)")
             NSWorkspace.shared.activateFileViewerSelecting([destination])
         } catch {
+            writeLog("createFile failed: \(error.localizedDescription)")
             showError(error)
         }
     }
@@ -93,14 +112,23 @@ final class FinderSync: FIFinderSync {
     }
 
     private func targetDirectory() -> URL? {
-        if let targeted = FIFinderSyncController.default().targetedURL() {
-            return folderURL(for: targeted)
-        }
-
-        if let selected = FIFinderSyncController.default().selectedItemURLs()?.first {
+        let selectedURLs = FIFinderSyncController.default().selectedItemURLs() ?? []
+        if let selected = selectedURLs.first {
+            writeLog("targetDirectory using selectedItemURLs first=\(selected.path)")
             return folderURL(for: selected)
         }
 
+        if let targeted = FIFinderSyncController.default().targetedURL() {
+            writeLog("targetDirectory using targetedURL=\(targeted.path)")
+            return folderURL(for: targeted)
+        }
+
+        if let insertionLocation = finderInsertionLocation() {
+            writeLog("targetDirectory using Finder insertion location=\(insertionLocation.path)")
+            return folderURL(for: insertionLocation)
+        }
+
+        writeLog("targetDirectory failed: selectedItemURLs, targetedURL, and Finder insertion location are empty")
         return nil
     }
 
@@ -127,9 +155,74 @@ final class FinderSync: FIFinderSync {
     private func showError(_ error: Error) {
         let alert = NSAlert()
         alert.messageText = localized("error.createFailed")
-        alert.informativeText = error.localizedDescription
+        alert.informativeText = errorText(error)
         alert.alertStyle = .warning
         alert.runModal()
+    }
+
+    private func errorText(_ error: Error) -> String {
+        guard let createError = error as? FinderCreateError else {
+            return error.localizedDescription
+        }
+
+        switch createError {
+        case .missingTemplate:
+            return localized("error.missingTemplate")
+        case .missingTargetDirectory:
+            return localized("error.missingTargetDirectory")
+        case .createFileReturnedFalse(let path):
+            return String(format: localized("error.createReturnedFalse"), path)
+        }
+    }
+
+    private func finderInsertionLocation() -> URL? {
+        let source = """
+        tell application "Finder"
+            if (count of Finder windows) > 0 then
+                set targetFolder to insertion location as alias
+                return POSIX path of targetFolder
+            end if
+        end tell
+        """
+
+        var errorInfo: NSDictionary?
+        let output = NSAppleScript(source: source)?.executeAndReturnError(&errorInfo)
+
+        if let errorInfo {
+            writeLog("finderInsertionLocation AppleScript error=\(errorInfo)")
+        }
+
+        guard let path = output?.stringValue, !path.isEmpty else {
+            return nil
+        }
+
+        return URL(fileURLWithPath: path)
+    }
+
+    private func writeLog(_ message: String) {
+        let timestamp = ISO8601DateFormatter().string(from: Date())
+        let line = "[\(timestamp)] \(message)\n"
+        NSLog("MacCreateFileApp: %@", message)
+
+        do {
+            try FileManager.default.createDirectory(
+                at: logFileURL.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+
+            if FileManager.default.fileExists(atPath: logFileURL.path),
+               let handle = try? FileHandle(forWritingTo: logFileURL) {
+                defer { try? handle.close() }
+                try handle.seekToEnd()
+                if let data = line.data(using: .utf8) {
+                    try handle.write(contentsOf: data)
+                }
+            } else {
+                try line.write(to: logFileURL, atomically: true, encoding: .utf8)
+            }
+        } catch {
+            NSLog("MacCreateFileApp: could not write log: %@", error.localizedDescription)
+        }
     }
 
     private func localized(_ key: String) -> String {
@@ -154,11 +247,33 @@ enum FileContent {
     case data(Data)
 
     func write(to url: URL) throws {
+        let outputData: Data
         switch self {
         case .text(let text):
-            try text.write(to: url, atomically: true, encoding: .utf8)
-        case .data(let data):
-            try data.write(to: url, options: .atomic)
+            outputData = Data(text.utf8)
+        case .data(let fileData):
+            outputData = fileData
+        }
+
+        guard FileManager.default.createFile(atPath: url.path, contents: outputData) else {
+            throw FinderCreateError.createFileReturnedFalse(url.path)
+        }
+    }
+}
+
+enum FinderCreateError: LocalizedError {
+    case missingTemplate
+    case missingTargetDirectory
+    case createFileReturnedFalse(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .missingTemplate:
+            return "The selected file type could not be resolved."
+        case .missingTargetDirectory:
+            return "Finder did not provide a target folder. Open a Finder folder window and try right-clicking inside the file list area."
+        case .createFileReturnedFalse(let path):
+            return "The file could not be created at: \(path)"
         }
     }
 }

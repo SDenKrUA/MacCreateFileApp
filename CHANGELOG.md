@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.3 - 2026-05-16
+
+- Fixed silent failures when choosing a file type from the Finder submenu.
+- Added Finder insertion-location fallback when Finder Sync does not provide `targetedURL` or `selectedItemURLs`.
+- Added visible localized errors instead of returning silently.
+- Switched file creation to `FileManager.createFile`.
+- Added extension-side diagnostics to `~/Library/Logs/MacCreateFileApp.log` and system log.
+
 ## 1.0.2 - 2026-05-16
 
 - Removed the sandbox entitlement from the main app so `pluginkit` commands can run without `PKDiscoverAll` authorization errors.
