@@ -53,6 +53,6 @@ cp -R "$ROOT_DIR/Resources/." "$APP_RESOURCES/"
 cp -R "$ROOT_DIR/ExtensionResources/." "$EXT_RESOURCES/"
 
 codesign --force --sign "$SIGN_IDENTITY" --entitlements "$ROOT_DIR/Entitlements-Extension.plist" "$EXT_BUNDLE"
-codesign --force --sign "$SIGN_IDENTITY" --entitlements "$ROOT_DIR/Entitlements-App.plist" "$APP_BUNDLE"
+codesign --force --sign "$SIGN_IDENTITY" "$APP_BUNDLE"
 
 echo "Built: $APP_BUNDLE"

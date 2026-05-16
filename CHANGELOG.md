@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2 - 2026-05-16
+
+- Removed the sandbox entitlement from the main app so `pluginkit` commands can run without `PKDiscoverAll` authorization errors.
+- Removed the app-side `pluginkit -m` discovery check after enabling the extension.
+- Kept the Finder extension sandboxed with its Finder-specific entitlements.
+
 ## 1.0.1 - 2026-05-16
 
 - Changed release packaging to produce a `.zip` containing `Mac Create File.app` instead of a `.dmg`.

@@ -86,14 +86,7 @@ struct ContentView: View {
 
         _ = Shell.run("/usr/bin/killall", arguments: ["Finder"])
 
-        let statusResult = Shell.run("/usr/bin/pluginkit", arguments: [
-            "-m", "-v",
-            "-i", "com.sdenkrua.MacCreateFileApp.FinderExtension"
-        ])
-
-        statusMessage = statusResult.output.isEmpty
-            ? String(localized: "status.extensionEnabledNeedsSettings")
-            : String(localized: "status.extensionEnabled")
+        statusMessage = String(localized: "status.extensionEnabled")
     }
 
     private func openExtensionSettings() {
