@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.10`.
+Latest implemented release in this checkout: `v1.0.11`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -14,7 +14,7 @@ Supported file types:
 - `xlsx`
 - `pptx`
 
-Optional developer file types, shown only when the app toggle is enabled:
+Developer file types, always available under `Create File > Developer Types`:
 
 - `md`
 - `rtf`
@@ -119,22 +119,22 @@ Future polish ideas:
 2. Add a one-click "Open Logs" button.
 3. Add a signed/notarized release pipeline.
 
-## Shared Settings (App + Extension)
+## Developer File Types Menu
 
-From `v1.0.10`, the `Show developer file types` toggle is shared through the Finder extension preferences inside the extension sandbox container:
+From `v1.0.11`, there is no developer file type toggle and no shared settings path for this feature.
 
-- File: `~/Library/Containers/com.sdenkrua.MacCreateFileApp.FinderExtension/Data/Library/Preferences/com.sdenkrua.MacCreateFileApp.FinderExtension.plist`
-- Key: `showDeveloperFileTypes`
+Finder always shows:
 
-`v1.0.8` used App Group defaults, but that caused a macOS privacy warning when Finder loaded the extension menu after toggling the setting. `v1.0.9` removed App Group entitlements but stored the value in Application Support, which the sandboxed extension did not reliably read. `v1.0.10` writes into the extension's own preferences file and the extension reads that file directly to avoid preferences daemon cache issues.
+- Top-level `Create File` submenu with `txt`, `pdf`, `docx`, `xlsx`, `pptx`.
+- Nested `Developer Types` submenu with `md`, `rtf`, `csv`, `json`, `html`, `css`, `js`, `py`, `swift`, `sh`.
 
-The main app migrates the previous value from `~/Library/Application Support/MacCreateFileApp/Settings.plist` if the new extension preferences file does not exist yet.
+This replaced the `v1.0.7` through `v1.0.10` toggle experiments, which either required Finder restarts, hit sandbox preference visibility issues, or triggered App Group privacy warnings.
 
 ## Build Commands
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.10 scripts/package_release.sh
+VERSION=1.0.11 scripts/package_release.sh
 ```
 
 ## Release Shape

@@ -6,7 +6,7 @@ Mac Create File is a macOS utility that adds a Finder right-click menu for creat
 
 - Adds a `Create File` submenu to Finder context menus.
 - Creates common file types: `txt`, `pdf`, `docx`, `xlsx`, and `pptx`.
-- Optional developer file types can be shown from the app: `md`, `rtf`, `csv`, `json`, `html`, `css`, `js`, `py`, `swift`, and `sh`.
+- Adds a nested `Developer Types` submenu for `md`, `rtf`, `csv`, `json`, `html`, `css`, `js`, `py`, `swift`, and `sh`.
 - Avoids overwriting existing files by automatically using names like `New Text File 2.txt`.
 - Selects the newly created file in Finder.
 - Copies selected Finder item paths.
@@ -87,13 +87,13 @@ scripts/install_local.sh
 ## Package a Release
 
 ```sh
-VERSION=1.0.7 scripts/package_release.sh
+VERSION=1.0.11 scripts/package_release.sh
 ```
 
 Release artifacts are created in `dist/`:
 
 ```text
-MacCreateFile-1.0.7-mac-<arch>.zip
+MacCreateFile-1.0.11-mac-<arch>.zip
 ```
 
 ## Signing

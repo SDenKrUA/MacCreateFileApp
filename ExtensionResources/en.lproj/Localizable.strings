@@ -1,5 +1,6 @@
 "menu.root" = "Mac Create File";
 "menu.createFile" = "Create File";
+"menu.developerFileTypes" = "Developer Types";
 "menu.copyPath" = "Copy Path";
 "menu.openTerminal" = "Open Terminal Here";
 "error.createFailed" = "Could not create the file";

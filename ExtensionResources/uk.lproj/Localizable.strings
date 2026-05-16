@@ -1,5 +1,6 @@
 "menu.root" = "Mac Create File";
 "menu.createFile" = "Створити файл";
+"menu.developerFileTypes" = "Developer типи";
 "menu.copyPath" = "Скопіювати шлях";
 "menu.openTerminal" = "Відкрити Terminal тут";
 "error.createFailed" = "Не вдалося створити файл";

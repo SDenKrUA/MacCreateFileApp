@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.11 - 2026-05-16
+
+- Removed the `Show developer file types` toggle from the main app.
+- Added a permanent `Developer Types` submenu under the Finder `Create File` menu.
+- Removed developer-toggle settings reads/writes, so changing developer type visibility no longer requires restarting Finder.
+
 ## 1.0.10 - 2026-05-16
 
 - Fixed developer file type visibility without using App Group entitlements.

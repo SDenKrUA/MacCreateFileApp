@@ -36,7 +36,7 @@ final class FinderSync: FIFinderSync {
         let menu = NSMenu(title: localized("menu.root"))
 
         let createMenu = NSMenu(title: localized("menu.createFile"))
-        for template in visibleFileTypes {
+        for template in fileTypes {
             let item = NSMenuItem(
                 title: localized(template.nameKey),
                 action: actionSelector(for: template.id),
@@ -44,6 +44,20 @@ final class FinderSync: FIFinderSync {
             )
             createMenu.addItem(item)
         }
+
+        let developerMenu = NSMenu(title: localized("menu.developerFileTypes"))
+        for template in developerFileTypes {
+            let item = NSMenuItem(
+                title: localized(template.nameKey),
+                action: actionSelector(for: template.id),
+                keyEquivalent: ""
+            )
+            developerMenu.addItem(item)
+        }
+
+        let developerItem = NSMenuItem(title: localized("menu.developerFileTypes"), action: nil, keyEquivalent: "")
+        developerItem.submenu = developerMenu
+        createMenu.addItem(developerItem)
 
         let createItem = NSMenuItem(title: localized("menu.createFile"), action: nil, keyEquivalent: "")
         createItem.submenu = createMenu
@@ -241,10 +255,6 @@ final class FinderSync: FIFinderSync {
         }
     }
 
-    private var visibleFileTypes: [FileTemplate] {
-        SharedSettings.showDeveloperFileTypes ? fileTypes + developerFileTypes : fileTypes
-    }
-
     private var allFileTypes: [FileTemplate] {
         fileTypes + developerFileTypes
     }
@@ -392,24 +402,5 @@ enum FinderCreateError: LocalizedError {
         case .createFileReturnedFalse(let path):
             return "The file could not be created at: \(path)"
         }
-    }
-}
-
-enum SharedSettings {
-    private static let developerFileTypesKey = "showDeveloperFileTypes"
-    private static let extensionID = "com.sdenkrua.MacCreateFileApp.FinderExtension"
-
-    private static var settingsURL: URL? {
-        FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first?
-            .appendingPathComponent("Preferences/\(extensionID).plist")
-    }
-
-    static var showDeveloperFileTypes: Bool {
-        guard
-            let settingsURL,
-            let data = try? Data(contentsOf: settingsURL),
-            let plist = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Bool]
-        else { return false }
-        return plist[developerFileTypesKey] ?? false
     }
 }
