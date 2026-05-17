@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.18`.
+Latest implemented release in this checkout: `v1.0.19`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -166,6 +166,12 @@ Updated in `v1.0.18`:
 - `Copy Path` and `Open Terminal Here` glyphs were tightened to better match native Finder menu icon weight.
 - Ukrainian Finder menu label uses `Термінал`.
 
+Updated in `v1.0.19`:
+
+- Menu icon stroke weight was reduced again to about `1.15`.
+- Document folded corners are larger and closer to Finder's native document icon shape.
+- `Copy Path` now draws only the visible portion of the back document, with the front document reading as the primary shape.
+
 ## Bundled File Templates
 
 Implemented in `v1.0.16`:
@@ -191,7 +197,7 @@ Implemented in `v1.0.17`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.18 scripts/package_release.sh
+VERSION=1.0.19 scripts/package_release.sh
 ```
 
 ## Release Shape

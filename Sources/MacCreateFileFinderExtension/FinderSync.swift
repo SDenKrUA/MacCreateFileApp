@@ -331,28 +331,28 @@ final class FinderSync: FIFinderSync {
             : NSColor(calibratedWhite: 0.12, alpha: 1.0)
         color.setStroke()
 
-        let lineWidth: CGFloat = 1.25
+        let lineWidth: CGFloat = 1.15
         switch kind {
         case .createFile:
-            drawDocument(in: CGRect(x: 3.0, y: 2.0, width: 9.2, height: 12.0), lineWidth: lineWidth, fold: 2.3)
+            drawDocumentOutline(in: CGRect(x: 3.2, y: 2.0, width: 9.3, height: 12.0), lineWidth: lineWidth, fold: 3.2)
             let plus = NSBezierPath()
-            plus.lineWidth = 1.2
+            plus.lineWidth = 1.05
             plus.lineCapStyle = .round
-            plus.move(to: CGPoint(x: 9.4, y: 3.8))
-            plus.line(to: CGPoint(x: 9.4, y: 7.6))
-            plus.move(to: CGPoint(x: 7.5, y: 5.7))
-            plus.line(to: CGPoint(x: 11.3, y: 5.7))
+            plus.move(to: CGPoint(x: 9.7, y: 4.0))
+            plus.line(to: CGPoint(x: 9.7, y: 7.2))
+            plus.move(to: CGPoint(x: 8.1, y: 5.6))
+            plus.line(to: CGPoint(x: 11.3, y: 5.6))
             plus.stroke()
         case .copyPath:
-            drawDocument(in: CGRect(x: 5.0, y: 4.0, width: 7.8, height: 9.6), lineWidth: lineWidth, fold: 2.0)
-            drawDocument(in: CGRect(x: 2.8, y: 1.6, width: 7.8, height: 9.6), lineWidth: lineWidth, fold: 2.0)
+            drawBackDocumentHint(in: CGRect(x: 5.1, y: 4.0, width: 8.1, height: 10.0), lineWidth: lineWidth, fold: 2.7)
+            drawDocumentOutline(in: CGRect(x: 2.8, y: 1.8, width: 8.8, height: 11.0), lineWidth: lineWidth, fold: 3.0)
         case .terminal:
             let window = NSBezierPath(roundedRect: CGRect(x: 2.0, y: 3.5, width: 12.0, height: 9.0), xRadius: 1.5, yRadius: 1.5)
             window.lineWidth = lineWidth
             window.stroke()
 
             let prompt = NSBezierPath()
-            prompt.lineWidth = 1.2
+            prompt.lineWidth = 1.1
             prompt.lineCapStyle = .round
             prompt.lineJoinStyle = .round
             prompt.move(to: CGPoint(x: 4.4, y: 6.2))
@@ -368,10 +368,11 @@ final class FinderSync: FIFinderSync {
         return image
     }
 
-    private func drawDocument(in rect: CGRect, lineWidth: CGFloat, fold: CGFloat) {
+    private func drawDocumentOutline(in rect: CGRect, lineWidth: CGFloat, fold: CGFloat) {
         let path = NSBezierPath()
         path.lineWidth = lineWidth
         path.lineJoinStyle = .round
+        path.lineCapStyle = .round
         path.move(to: CGPoint(x: rect.minX, y: rect.minY))
         path.line(to: CGPoint(x: rect.minX, y: rect.maxY))
         path.line(to: CGPoint(x: rect.maxX - fold, y: rect.maxY))
@@ -381,8 +382,31 @@ final class FinderSync: FIFinderSync {
         path.stroke()
 
         let foldPath = NSBezierPath()
-        foldPath.lineWidth = lineWidth
+        foldPath.lineWidth = lineWidth * 0.9
         foldPath.lineJoinStyle = .round
+        foldPath.lineCapStyle = .round
+        foldPath.move(to: CGPoint(x: rect.maxX - fold, y: rect.maxY))
+        foldPath.line(to: CGPoint(x: rect.maxX - fold, y: rect.maxY - fold))
+        foldPath.line(to: CGPoint(x: rect.maxX, y: rect.maxY - fold))
+        foldPath.stroke()
+    }
+
+    private func drawBackDocumentHint(in rect: CGRect, lineWidth: CGFloat, fold: CGFloat) {
+        let path = NSBezierPath()
+        path.lineWidth = lineWidth
+        path.lineJoinStyle = .round
+        path.lineCapStyle = .round
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY + 2.2))
+        path.line(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.line(to: CGPoint(x: rect.maxX - fold, y: rect.maxY))
+        path.line(to: CGPoint(x: rect.maxX, y: rect.maxY - fold))
+        path.line(to: CGPoint(x: rect.maxX, y: rect.minY + 3.0))
+        path.stroke()
+
+        let foldPath = NSBezierPath()
+        foldPath.lineWidth = lineWidth * 0.9
+        foldPath.lineJoinStyle = .round
+        foldPath.lineCapStyle = .round
         foldPath.move(to: CGPoint(x: rect.maxX - fold, y: rect.maxY))
         foldPath.line(to: CGPoint(x: rect.maxX - fold, y: rect.maxY - fold))
         foldPath.line(to: CGPoint(x: rect.maxX, y: rect.maxY - fold))

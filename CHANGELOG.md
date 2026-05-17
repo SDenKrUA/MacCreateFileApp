@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.19 - 2026-05-17
+
+- Refined custom document menu icons to better match native Finder icon geometry.
+- Increased the folded document corner size so it reads less like a filled black corner.
+- Changed the `Copy Path` icon to draw the rear document as a partial behind-document outline.
+- Reduced custom icon stroke weight again for a lighter native feel.
+
 ## 1.0.18 - 2026-05-17
 
 - Refined Finder menu icon geometry to better match native macOS menu icons.
