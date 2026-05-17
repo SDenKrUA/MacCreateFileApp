@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.18 - 2026-05-17
+
+- Refined Finder menu icon geometry to better match native macOS menu icons.
+- Made menu icon strokes thinner and added more inner spacing.
+- Moved the plus mark inside the `Create File` document icon for better readability.
+- Updated Ukrainian menu text from `Terminal` to `Термінал`.
+
 ## 1.0.17 - 2026-05-17
 
 - Added an `Apple iWork` submenu under `Create File`.

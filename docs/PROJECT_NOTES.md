@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.17`.
+Latest implemented release in this checkout: `v1.0.18`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -159,6 +159,13 @@ Updated in `v1.0.14`:
 - The extension now draws its own 16x16 outline menu icons.
 - Icon stroke color is selected from `NSApp.effectiveAppearance`: light stroke in dark mode, dark stroke in light mode.
 
+Updated in `v1.0.18`:
+
+- Menu icon stroke weight was reduced from `1.7` to about `1.25`.
+- `Create File` plus mark was moved inside the document outline.
+- `Copy Path` and `Open Terminal Here` glyphs were tightened to better match native Finder menu icon weight.
+- Ukrainian Finder menu label uses `Термінал`.
+
 ## Bundled File Templates
 
 Implemented in `v1.0.16`:
@@ -184,7 +191,7 @@ Implemented in `v1.0.17`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.17 scripts/package_release.sh
+VERSION=1.0.18 scripts/package_release.sh
 ```
 
 ## Release Shape

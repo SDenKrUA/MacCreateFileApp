@@ -331,35 +331,35 @@ final class FinderSync: FIFinderSync {
             : NSColor(calibratedWhite: 0.12, alpha: 1.0)
         color.setStroke()
 
-        let lineWidth: CGFloat = 1.7
+        let lineWidth: CGFloat = 1.25
         switch kind {
         case .createFile:
-            drawDocument(in: CGRect(x: 3.0, y: 2.0, width: 8.0, height: 12.0), lineWidth: lineWidth)
+            drawDocument(in: CGRect(x: 3.0, y: 2.0, width: 9.2, height: 12.0), lineWidth: lineWidth, fold: 2.3)
             let plus = NSBezierPath()
-            plus.lineWidth = lineWidth
+            plus.lineWidth = 1.2
             plus.lineCapStyle = .round
-            plus.move(to: CGPoint(x: 12.2, y: 4.0))
-            plus.line(to: CGPoint(x: 12.2, y: 10.0))
-            plus.move(to: CGPoint(x: 9.2, y: 7.0))
-            plus.line(to: CGPoint(x: 15.0, y: 7.0))
+            plus.move(to: CGPoint(x: 9.4, y: 3.8))
+            plus.line(to: CGPoint(x: 9.4, y: 7.6))
+            plus.move(to: CGPoint(x: 7.5, y: 5.7))
+            plus.line(to: CGPoint(x: 11.3, y: 5.7))
             plus.stroke()
         case .copyPath:
-            drawDocument(in: CGRect(x: 5.0, y: 3.0, width: 8.0, height: 10.0), lineWidth: lineWidth)
-            drawDocument(in: CGRect(x: 2.5, y: 1.0, width: 8.0, height: 10.0), lineWidth: lineWidth)
+            drawDocument(in: CGRect(x: 5.0, y: 4.0, width: 7.8, height: 9.6), lineWidth: lineWidth, fold: 2.0)
+            drawDocument(in: CGRect(x: 2.8, y: 1.6, width: 7.8, height: 9.6), lineWidth: lineWidth, fold: 2.0)
         case .terminal:
-            let window = NSBezierPath(roundedRect: CGRect(x: 1.5, y: 3.0, width: 13.0, height: 10.0), xRadius: 1.8, yRadius: 1.8)
+            let window = NSBezierPath(roundedRect: CGRect(x: 2.0, y: 3.5, width: 12.0, height: 9.0), xRadius: 1.5, yRadius: 1.5)
             window.lineWidth = lineWidth
             window.stroke()
 
             let prompt = NSBezierPath()
-            prompt.lineWidth = lineWidth
+            prompt.lineWidth = 1.2
             prompt.lineCapStyle = .round
             prompt.lineJoinStyle = .round
-            prompt.move(to: CGPoint(x: 4.0, y: 6.0))
-            prompt.line(to: CGPoint(x: 6.2, y: 8.0))
-            prompt.line(to: CGPoint(x: 4.0, y: 10.0))
-            prompt.move(to: CGPoint(x: 8.2, y: 6.0))
-            prompt.line(to: CGPoint(x: 11.5, y: 6.0))
+            prompt.move(to: CGPoint(x: 4.4, y: 6.2))
+            prompt.line(to: CGPoint(x: 6.3, y: 8.0))
+            prompt.line(to: CGPoint(x: 4.4, y: 9.8))
+            prompt.move(to: CGPoint(x: 8.0, y: 6.2))
+            prompt.line(to: CGPoint(x: 11.0, y: 6.2))
             prompt.stroke()
         }
 
@@ -368,8 +368,7 @@ final class FinderSync: FIFinderSync {
         return image
     }
 
-    private func drawDocument(in rect: CGRect, lineWidth: CGFloat) {
-        let fold: CGFloat = 2.4
+    private func drawDocument(in rect: CGRect, lineWidth: CGFloat, fold: CGFloat) {
         let path = NSBezierPath()
         path.lineWidth = lineWidth
         path.lineJoinStyle = .round
