@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.23 - 2026-05-17
+
+- Added an `Allowed Folders` section to the main app for cloud/protected folders.
+- Added folder bookmark storage in the Finder extension container without reintroducing App Group sharing.
+- Finder extension now loads allowed folders, starts security-scoped access when available, and adds them to monitored roots.
+- Kept a stored-path fallback for diagnostics and monitoring when a bookmark cannot be resolved.
+
 ## 1.0.22 - 2026-05-17
 
 - Added the real user home folder as a Finder Sync monitored root so cloud-backed subfolders such as `Documents/Тест` are observed.

@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.22`.
+Latest implemented release in this checkout: `v1.0.23`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -202,6 +202,15 @@ Fixed in `v1.0.22`:
 - Added diagnostic logs for `beginObservingDirectory`, `endObservingDirectory`, and `menu(for:)` calls. These stay useful for future Finder Sync issues and are written to the extension container log.
 - File creation now prefers `FIFinderSyncController.default().targetedURL()` over `selectedItemURLs()`. This avoids stale Finder sidebar/search selected URLs such as `myDocuments.cannedSearch` overriding the actual folder that was right-clicked.
 
+Added in `v1.0.23`:
+
+- The main app now has an `Allowed Folders` / `Дозволені папки` section.
+- Users can add custom folders through `NSOpenPanel`, or quickly add Desktop, Documents, iCloud Drive, and CloudStorage.
+- Allowed folders are stored in the Finder extension container at `~/Library/Containers/com.sdenkrua.MacCreateFileApp.FinderExtension/Data/Library/Application Support/MacCreateFileApp/AllowedFolders.plist`.
+- This avoids App Group sharing, which previously triggered macOS privacy warnings in this app.
+- The Finder extension reads allowed folder bookmarks, starts security-scoped access when available, and adds those folders to `directoryURLs` on top of the default roots.
+- If a bookmark cannot be resolved, the extension logs the failure and falls back to the stored path as a monitored folder so diagnostics remain possible.
+
 ## Bundled File Templates
 
 Implemented in `v1.0.16`:
@@ -227,7 +236,7 @@ Implemented in `v1.0.17`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.22 scripts/package_release.sh
+VERSION=1.0.23 scripts/package_release.sh
 ```
 
 ## Release Shape

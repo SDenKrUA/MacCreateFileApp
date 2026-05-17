@@ -6,6 +6,7 @@ import FinderSync
 final class FinderSync: FIFinderSync {
     private let logFileURL = URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
         .appendingPathComponent("Library/Logs/MacCreateFileApp.log")
+    private var activeSecurityScopedURLs: [URL] = []
 
     private let fileTypes: [FileTemplate] = [
         .init(id: "txt", extensionName: "txt", nameKey: "file.text", baseNameKey: "filename.text", content: .text("")),
@@ -63,6 +64,7 @@ final class FinderSync: FIFinderSync {
                 action: actionSelector(for: template.id),
                 keyEquivalent: ""
             )
+            item.target = self
             createMenu.addItem(item)
         }
 
@@ -73,6 +75,7 @@ final class FinderSync: FIFinderSync {
                 action: actionSelector(for: template.id),
                 keyEquivalent: ""
             )
+            item.target = self
             iWorkMenu.addItem(item)
         }
 
@@ -87,6 +90,7 @@ final class FinderSync: FIFinderSync {
                 action: actionSelector(for: template.id),
                 keyEquivalent: ""
             )
+            item.target = self
             developerMenu.addItem(item)
         }
 
@@ -100,10 +104,12 @@ final class FinderSync: FIFinderSync {
         menu.addItem(createItem)
 
         let copyPathItem = NSMenuItem(title: localized("menu.copyPath"), action: #selector(copyPath(_:)), keyEquivalent: "")
+        copyPathItem.target = self
         copyPathItem.image = menuIcon(.copyPath)
         menu.addItem(copyPathItem)
 
         let terminalItem = NSMenuItem(title: localized("menu.openTerminal"), action: #selector(openTerminal(_:)), keyEquivalent: "")
+        terminalItem.target = self
         terminalItem.image = menuIcon(.terminal)
         menu.addItem(terminalItem)
 
@@ -198,6 +204,10 @@ final class FinderSync: FIFinderSync {
     @objc(createKeynotePresentation:)
     func createKeynotePresentation(_ sender: NSMenuItem) {
         createFile(withID: "key")
+    }
+
+    func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        true
     }
 
     private func createFile(withID id: String) {
@@ -447,9 +457,9 @@ final class FinderSync: FIFinderSync {
         let cloudStorage = home.appendingPathComponent("Library/CloudStorage", isDirectory: true)
         let mobileDocuments = home.appendingPathComponent("Library/Mobile Documents", isDirectory: true)
         let iCloudDrive = mobileDocuments.appendingPathComponent("com~apple~CloudDocs", isDirectory: true)
+        let allowedFolders = securityScopedAllowedFolderURLs()
 
         var urls: [URL] = [
-            URL(fileURLWithPath: "/", isDirectory: true),
             home,
             home.appendingPathComponent("Desktop", isDirectory: true),
             home.appendingPathComponent("Documents", isDirectory: true),
@@ -464,6 +474,8 @@ final class FinderSync: FIFinderSync {
             urls.append(contentsOf: cloudProviders)
         }
 
+        urls.append(contentsOf: allowedFolders)
+
         return Set(urls.filter { url in
             var isDirectory: ObjCBool = false
             return fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory) && isDirectory.boolValue
@@ -477,6 +489,62 @@ final class FinderSync: FIFinderSync {
         }
 
         return URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
+    }
+
+    private func securityScopedAllowedFolderURLs() -> [URL] {
+        activeSecurityScopedURLs.forEach { $0.stopAccessingSecurityScopedResource() }
+        activeSecurityScopedURLs.removeAll()
+
+        let records = AllowedFolderStore.load()
+        writeLog("Allowed folders loaded count=\(records.count)")
+
+        return records.compactMap { record in
+            var isStale = false
+            do {
+                let url = try URL(
+                    resolvingBookmarkData: record.bookmarkData,
+                    options: [.withSecurityScope],
+                    relativeTo: nil,
+                    bookmarkDataIsStale: &isStale
+                )
+
+                if isStale {
+                    writeLog("Allowed folder bookmark is stale path=\(record.path)")
+                }
+
+                if url.startAccessingSecurityScopedResource() {
+                    activeSecurityScopedURLs.append(url)
+                    writeLog("Allowed folder access started path=\(url.path)")
+                } else {
+                    writeLog("Allowed folder access not needed or denied path=\(url.path)")
+                }
+
+                return url
+            } catch {
+                writeLog("Allowed folder security bookmark failed path=\(record.path) error=\(error.localizedDescription)")
+
+                do {
+                    let url = try URL(
+                        resolvingBookmarkData: record.bookmarkData,
+                        options: [],
+                        relativeTo: nil,
+                        bookmarkDataIsStale: &isStale
+                    )
+                    writeLog("Allowed folder resolved without security scope path=\(url.path)")
+                    return url
+                } catch {
+                    let fallbackURL = URL(fileURLWithPath: record.path, isDirectory: true)
+                    var isDirectory: ObjCBool = false
+                    if FileManager.default.fileExists(atPath: fallbackURL.path, isDirectory: &isDirectory), isDirectory.boolValue {
+                        writeLog("Allowed folder using stored path fallback path=\(fallbackURL.path)")
+                        return fallbackURL
+                    }
+
+                    writeLog("Allowed folder path fallback missing path=\(record.path) error=\(error.localizedDescription)")
+                    return nil
+                }
+            }
+        }
     }
 
     private func directoryChildren(of url: URL) -> [URL]? {
@@ -712,6 +780,37 @@ enum FinderCreateError: LocalizedError {
             return "Finder could not copy the new file to: \(path)"
         case .openTerminalFailed(let path):
             return "Terminal could not be opened at: \(path)"
+        }
+    }
+}
+
+struct AllowedFolderRecord {
+    let name: String
+    let path: String
+    let bookmarkData: Data
+}
+
+enum AllowedFolderStore {
+    static let extensionID = "com.sdenkrua.MacCreateFileApp.FinderExtension"
+
+    static var storeURL: URL {
+        URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
+            .appendingPathComponent("Library/Application Support/MacCreateFileApp/AllowedFolders.plist")
+    }
+
+    static func load() -> [AllowedFolderRecord] {
+        guard let items = NSArray(contentsOf: storeURL) as? [[String: Any]] else {
+            return []
+        }
+
+        return items.compactMap { item in
+            guard let name = item["name"] as? String,
+                  let path = item["path"] as? String,
+                  let bookmarkData = item["bookmarkData"] as? Data else {
+                return nil
+            }
+
+            return AllowedFolderRecord(name: name, path: path, bookmarkData: bookmarkData)
         }
     }
 }
