@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.20`.
+Latest implemented release in this checkout: `v1.0.21`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -188,6 +188,14 @@ Updated in `v1.0.20`:
 - The extension writes the final monitored roots to `~/Library/Logs/MacCreateFileApp.log` on startup.
 - If a cloud provider still blocks file creation after the menu appears, the next escalation is a user-granted folder access flow with security-scoped bookmarks stored for the extension without reintroducing App Group prompts.
 
+Fixed in `v1.0.21`:
+
+- The `v1.0.20` cloud-root implementation used `NSHomeDirectoryForUser(NSUserName())`, which resolves to the Finder extension sandbox home while the extension is sandboxed.
+- The extension now resolves the real current-user home with `getpwuid(getuid())`, so monitored roots are built from the actual `/Users/<name>` home on any Mac.
+- Extension logging intentionally stays inside the extension container at `~/Library/Containers/com.sdenkrua.MacCreateFileApp.FinderExtension/Data/Library/Logs/MacCreateFileApp.log`, because that path is writable from the sandbox.
+- If direct file creation fails in Desktop, Documents, iCloud Drive, OneDrive, or another protected/cloud folder, the extension now creates a temporary source file inside its sandbox and asks Finder to duplicate it into the target folder through AppleScript.
+- This keeps the normal fast direct write for folders where it works and adds a Finder-mediated fallback for protected/cloud locations.
+
 ## Bundled File Templates
 
 Implemented in `v1.0.16`:
@@ -213,7 +221,7 @@ Implemented in `v1.0.17`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.20 scripts/package_release.sh
+VERSION=1.0.21 scripts/package_release.sh
 ```
 
 ## Release Shape

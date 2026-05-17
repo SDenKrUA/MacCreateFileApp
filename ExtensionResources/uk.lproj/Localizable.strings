@@ -9,6 +9,7 @@
 "error.missingTemplateFile" = "Файл шаблону всередині додатку відсутній: %@";
 "error.missingTargetDirectory" = "Finder не передав цільову папку. Відкрий вікно Finder з папкою і натисни правою кнопкою всередині списку файлів.";
 "error.createReturnedFalse" = "Не вдалося створити файл тут: %@";
+"error.finderDuplicateFailed" = "Finder не зміг скопіювати новий файл сюди: %@";
 "error.openTerminalFailed" = "Не вдалося відкрити Термінал тут: %@";
 "file.text" = "Текстовий файл";
 "file.markdown" = "Markdown файл";

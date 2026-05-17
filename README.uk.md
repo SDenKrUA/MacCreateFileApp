@@ -91,7 +91,7 @@ scripts/install_local.sh
 ## Релізний пакет
 
 ```sh
-VERSION=1.0.20 scripts/package_release.sh
+VERSION=1.0.21 scripts/package_release.sh
 ```
 
 Файли релізу створюються у `dist/`:

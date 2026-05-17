@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.21 - 2026-05-17
+
+- Fixed Finder Sync cloud-folder monitoring to use the real current user's home directory instead of the extension sandbox home.
+- Kept extension logs inside the extension container so diagnostics remain writable from the sandbox.
+- Added a Finder AppleScript duplicate fallback for Desktop, Documents, iCloud Drive, OneDrive, and other folders where direct sandbox writes can fail.
+- Added localized Finder fallback error text.
+
 ## 1.0.20 - 2026-05-17
 
 - Redrew the `Create File` and `Copy Path` document icons with larger folded corners and less visual overlap.

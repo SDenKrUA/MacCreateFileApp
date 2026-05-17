@@ -9,6 +9,7 @@
 "error.missingTemplateFile" = "The bundled template file is missing: %@";
 "error.missingTargetDirectory" = "Finder did not provide a target folder. Open a Finder folder window and right-click inside the file list area.";
 "error.createReturnedFalse" = "The file could not be created at: %@";
+"error.finderDuplicateFailed" = "Finder could not copy the new file to: %@";
 "error.openTerminalFailed" = "Terminal could not be opened at: %@";
 "file.text" = "Text File";
 "file.markdown" = "Markdown File";

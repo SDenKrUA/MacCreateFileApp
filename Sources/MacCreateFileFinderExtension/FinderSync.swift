@@ -1,9 +1,10 @@
 import AppKit
+import Darwin
 import FinderSync
 
 @objc(FinderSync)
 final class FinderSync: FIFinderSync {
-    private let logFileURL = URL(fileURLWithPath: NSHomeDirectoryForUser(NSUserName()) ?? NSHomeDirectory())
+    private let logFileURL = URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
         .appendingPathComponent("Library/Logs/MacCreateFileApp.log")
 
     private let fileTypes: [FileTemplate] = [
@@ -209,15 +210,28 @@ final class FinderSync: FIFinderSync {
 
         do {
             try template.content.write(to: destination)
-            if template.extensionName == "sh" {
-                try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: destination.path)
-            }
-            writeLog("createFile success path=\(destination.path)")
-            NSWorkspace.shared.activateFileViewerSelecting([destination])
         } catch {
-            writeLog("createFile failed: \(error.localizedDescription)")
-            showError(error)
+            writeLog("createFile direct write failed: \(error.localizedDescription)")
+
+            do {
+                try createFileViaFinder(template: template, destination: destination)
+            } catch {
+                writeLog("createFile Finder fallback failed: \(error.localizedDescription)")
+                showError(error)
+                return
+            }
         }
+
+        if template.extensionName == "sh" {
+            do {
+                try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: destination.path)
+            } catch {
+                writeLog("createFile chmod warning: \(error.localizedDescription)")
+            }
+        }
+
+        writeLog("createFile success path=\(destination.path)")
+        NSWorkspace.shared.activateFileViewerSelecting([destination])
     }
 
     @objc(copyPath:)
@@ -417,7 +431,7 @@ final class FinderSync: FIFinderSync {
 
     private func monitoredDirectoryURLs() -> Set<URL> {
         let fileManager = FileManager.default
-        let home = URL(fileURLWithPath: NSHomeDirectoryForUser(NSUserName()) ?? NSHomeDirectory(), isDirectory: true)
+        let home = realHomeDirectoryURL()
         let cloudStorage = home.appendingPathComponent("Library/CloudStorage", isDirectory: true)
         let mobileDocuments = home.appendingPathComponent("Library/Mobile Documents", isDirectory: true)
         let iCloudDrive = mobileDocuments.appendingPathComponent("com~apple~CloudDocs", isDirectory: true)
@@ -441,6 +455,15 @@ final class FinderSync: FIFinderSync {
             var isDirectory: ObjCBool = false
             return fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory) && isDirectory.boolValue
         })
+    }
+
+    private func realHomeDirectoryURL() -> URL {
+        if let passwordRecord = getpwuid(getuid()),
+           let homePath = passwordRecord.pointee.pw_dir {
+            return URL(fileURLWithPath: String(cString: homePath), isDirectory: true)
+        }
+
+        return URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
     }
 
     private func directoryChildren(of url: URL) -> [URL]? {
@@ -496,6 +519,8 @@ final class FinderSync: FIFinderSync {
             return localized("error.missingTargetDirectory")
         case .createFileReturnedFalse(let path):
             return String(format: localized("error.createReturnedFalse"), path)
+        case .finderDuplicateFailed(let path):
+            return String(format: localized("error.finderDuplicateFailed"), path)
         case .openTerminalFailed(let path):
             return String(format: localized("error.openTerminalFailed"), path)
         }
@@ -523,6 +548,53 @@ final class FinderSync: FIFinderSync {
         }
 
         return URL(fileURLWithPath: path)
+    }
+
+    private func createFileViaFinder(template: FileTemplate, destination: URL) throws {
+        let fileManager = FileManager.default
+        let temporaryDirectory = fileManager.temporaryDirectory
+            .appendingPathComponent("MacCreateFileApp", isDirectory: true)
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        let temporaryFile = temporaryDirectory.appendingPathComponent(destination.lastPathComponent)
+
+        try fileManager.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
+        defer { try? fileManager.removeItem(at: temporaryDirectory) }
+
+        try template.content.write(to: temporaryFile)
+        if template.extensionName == "sh" {
+            try fileManager.setAttributes([.posixPermissions: 0o755], ofItemAtPath: temporaryFile.path)
+        }
+
+        let targetFolderPath = destination.deletingLastPathComponent().path
+        let source = """
+        tell application "Finder"
+            set sourceFile to POSIX file "\(appleScriptString(temporaryFile.path))" as alias
+            set targetFolder to POSIX file "\(appleScriptString(targetFolderPath))" as alias
+            duplicate sourceFile to targetFolder
+        end tell
+        """
+
+        var errorInfo: NSDictionary?
+        NSAppleScript(source: source)?.executeAndReturnError(&errorInfo)
+
+        if let errorInfo {
+            writeLog("createFileViaFinder AppleScript error=\(errorInfo)")
+            throw FinderCreateError.finderDuplicateFailed(destination.path)
+        }
+
+        if !fileManager.fileExists(atPath: destination.path) {
+            throw FinderCreateError.createFileReturnedFalse(destination.path)
+        }
+
+        if template.extensionName == "sh" {
+            try? fileManager.setAttributes([.posixPermissions: 0o755], ofItemAtPath: destination.path)
+        }
+    }
+
+    private func appleScriptString(_ value: String) -> String {
+        value
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\"", with: "\\\"")
     }
 
     private func writeLog(_ message: String) {
@@ -610,6 +682,7 @@ enum FinderCreateError: LocalizedError {
     case missingTemplateFile(String)
     case missingTargetDirectory
     case createFileReturnedFalse(String)
+    case finderDuplicateFailed(String)
     case openTerminalFailed(String)
 
     var errorDescription: String? {
@@ -622,6 +695,8 @@ enum FinderCreateError: LocalizedError {
             return "Finder did not provide a target folder. Open a Finder folder window and try right-clicking inside the file list area."
         case .createFileReturnedFalse(let path):
             return "The file could not be created at: \(path)"
+        case .finderDuplicateFailed(let path):
+            return "Finder could not copy the new file to: \(path)"
         case .openTerminalFailed(let path):
             return "Terminal could not be opened at: \(path)"
         }
