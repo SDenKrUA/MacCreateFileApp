@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.20 - 2026-05-17
+
+- Redrew the `Create File` and `Copy Path` document icons with larger folded corners and less visual overlap.
+- Changed the `Copy Path` icon so the back document is only a partial behind-document hint, closer to Finder's native copy glyph.
+- Added explicit Finder monitored roots for Desktop, Documents, iCloud Drive, `Mobile Documents`, `CloudStorage`, and installed CloudStorage providers such as OneDrive.
+- Logged the monitored Finder roots at extension startup to make cloud-folder diagnostics easier.
+
 ## 1.0.19 - 2026-05-17
 
 - Refined custom document menu icons to better match native Finder icon geometry.

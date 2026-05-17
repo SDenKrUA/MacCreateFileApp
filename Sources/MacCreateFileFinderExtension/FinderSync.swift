@@ -35,7 +35,9 @@ final class FinderSync: FIFinderSync {
 
     override init() {
         super.init()
-        FIFinderSyncController.default().directoryURLs = [URL(fileURLWithPath: "/")]
+        let monitoredURLs = monitoredDirectoryURLs()
+        FIFinderSyncController.default().directoryURLs = monitoredURLs
+        writeLog("Monitoring Finder roots: \(monitoredURLs.map(\.path).sorted().joined(separator: ", "))")
     }
 
     override func menu(for menuKind: FIMenuKind) -> NSMenu? {
@@ -334,18 +336,18 @@ final class FinderSync: FIFinderSync {
         let lineWidth: CGFloat = 1.15
         switch kind {
         case .createFile:
-            drawDocumentOutline(in: CGRect(x: 3.2, y: 2.0, width: 9.3, height: 12.0), lineWidth: lineWidth, fold: 3.2)
+            drawDocumentOutline(in: CGRect(x: 3.1, y: 2.0, width: 9.8, height: 12.0), lineWidth: lineWidth, fold: 4.0)
             let plus = NSBezierPath()
             plus.lineWidth = 1.05
             plus.lineCapStyle = .round
-            plus.move(to: CGPoint(x: 9.7, y: 4.0))
-            plus.line(to: CGPoint(x: 9.7, y: 7.2))
-            plus.move(to: CGPoint(x: 8.1, y: 5.6))
-            plus.line(to: CGPoint(x: 11.3, y: 5.6))
+            plus.move(to: CGPoint(x: 9.9, y: 4.1))
+            plus.line(to: CGPoint(x: 9.9, y: 7.1))
+            plus.move(to: CGPoint(x: 8.4, y: 5.6))
+            plus.line(to: CGPoint(x: 11.4, y: 5.6))
             plus.stroke()
         case .copyPath:
-            drawBackDocumentHint(in: CGRect(x: 5.1, y: 4.0, width: 8.1, height: 10.0), lineWidth: lineWidth, fold: 2.7)
-            drawDocumentOutline(in: CGRect(x: 2.8, y: 1.8, width: 8.8, height: 11.0), lineWidth: lineWidth, fold: 3.0)
+            drawBackDocumentHint(in: CGRect(x: 5.0, y: 4.1, width: 8.0, height: 9.9), lineWidth: lineWidth, fold: 3.2)
+            drawDocumentOutline(in: CGRect(x: 2.9, y: 1.8, width: 9.0, height: 11.1), lineWidth: lineWidth, fold: 3.7)
         case .terminal:
             let window = NSBezierPath(roundedRect: CGRect(x: 2.0, y: 3.5, width: 12.0, height: 9.0), xRadius: 1.5, yRadius: 1.5)
             window.lineWidth = lineWidth
@@ -382,12 +384,12 @@ final class FinderSync: FIFinderSync {
         path.stroke()
 
         let foldPath = NSBezierPath()
-        foldPath.lineWidth = lineWidth * 0.9
+        foldPath.lineWidth = lineWidth * 0.75
         foldPath.lineJoinStyle = .round
         foldPath.lineCapStyle = .round
-        foldPath.move(to: CGPoint(x: rect.maxX - fold, y: rect.maxY))
+        foldPath.move(to: CGPoint(x: rect.maxX - fold + 0.35, y: rect.maxY - 0.35))
         foldPath.line(to: CGPoint(x: rect.maxX - fold, y: rect.maxY - fold))
-        foldPath.line(to: CGPoint(x: rect.maxX, y: rect.maxY - fold))
+        foldPath.line(to: CGPoint(x: rect.maxX - 0.35, y: rect.maxY - fold + 0.35))
         foldPath.stroke()
     }
 
@@ -396,21 +398,60 @@ final class FinderSync: FIFinderSync {
         path.lineWidth = lineWidth
         path.lineJoinStyle = .round
         path.lineCapStyle = .round
-        path.move(to: CGPoint(x: rect.minX, y: rect.minY + 2.2))
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY + 3.0))
         path.line(to: CGPoint(x: rect.minX, y: rect.maxY))
         path.line(to: CGPoint(x: rect.maxX - fold, y: rect.maxY))
         path.line(to: CGPoint(x: rect.maxX, y: rect.maxY - fold))
-        path.line(to: CGPoint(x: rect.maxX, y: rect.minY + 3.0))
+        path.line(to: CGPoint(x: rect.maxX, y: rect.minY + 4.2))
         path.stroke()
 
         let foldPath = NSBezierPath()
-        foldPath.lineWidth = lineWidth * 0.9
+        foldPath.lineWidth = lineWidth * 0.75
         foldPath.lineJoinStyle = .round
         foldPath.lineCapStyle = .round
-        foldPath.move(to: CGPoint(x: rect.maxX - fold, y: rect.maxY))
+        foldPath.move(to: CGPoint(x: rect.maxX - fold + 0.35, y: rect.maxY - 0.35))
         foldPath.line(to: CGPoint(x: rect.maxX - fold, y: rect.maxY - fold))
-        foldPath.line(to: CGPoint(x: rect.maxX, y: rect.maxY - fold))
+        foldPath.line(to: CGPoint(x: rect.maxX - 0.35, y: rect.maxY - fold + 0.35))
         foldPath.stroke()
+    }
+
+    private func monitoredDirectoryURLs() -> Set<URL> {
+        let fileManager = FileManager.default
+        let home = URL(fileURLWithPath: NSHomeDirectoryForUser(NSUserName()) ?? NSHomeDirectory(), isDirectory: true)
+        let cloudStorage = home.appendingPathComponent("Library/CloudStorage", isDirectory: true)
+        let mobileDocuments = home.appendingPathComponent("Library/Mobile Documents", isDirectory: true)
+        let iCloudDrive = mobileDocuments.appendingPathComponent("com~apple~CloudDocs", isDirectory: true)
+
+        var urls: [URL] = [
+            URL(fileURLWithPath: "/", isDirectory: true),
+            home.appendingPathComponent("Desktop", isDirectory: true),
+            home.appendingPathComponent("Documents", isDirectory: true),
+            cloudStorage,
+            mobileDocuments,
+            iCloudDrive,
+            iCloudDrive.appendingPathComponent("Desktop", isDirectory: true),
+            iCloudDrive.appendingPathComponent("Documents", isDirectory: true)
+        ]
+
+        if let cloudProviders = directoryChildren(of: cloudStorage) {
+            urls.append(contentsOf: cloudProviders)
+        }
+
+        return Set(urls.filter { url in
+            var isDirectory: ObjCBool = false
+            return fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory) && isDirectory.boolValue
+        })
+    }
+
+    private func directoryChildren(of url: URL) -> [URL]? {
+        try? FileManager.default.contentsOfDirectory(
+            at: url,
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: [.skipsHiddenFiles]
+        )
+        .filter { child in
+            (try? child.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
+        }
     }
 
     private func folderURL(for url: URL) -> URL {

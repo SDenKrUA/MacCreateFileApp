@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.19`.
+Latest implemented release in this checkout: `v1.0.20`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -172,6 +172,22 @@ Updated in `v1.0.19`:
 - Document folded corners are larger and closer to Finder's native document icon shape.
 - `Copy Path` now draws only the visible portion of the back document, with the front document reading as the primary shape.
 
+Updated in `v1.0.20`:
+
+- `Create File` and `Copy Path` document glyphs were redrawn again after user visual review.
+- The front document now has a larger folded corner and lighter internal fold line.
+- `Copy Path` uses a partial back-document hint so it reads as one document in front of another instead of two full overlapping outlines.
+
+## Cloud Folder Coverage
+
+Updated in `v1.0.20`:
+
+- Finder Sync no longer relies only on `directoryURLs = ["/"]`.
+- The extension now explicitly monitors `/`, the user's Desktop and Documents folders, `~/Library/CloudStorage`, each installed CloudStorage provider root, `~/Library/Mobile Documents`, and iCloud Drive at `~/Library/Mobile Documents/com~apple~CloudDocs` when those folders exist.
+- This is a pragmatic first fix for iCloud Drive, Desktop/Documents-in-iCloud, OneDrive, and similar File Provider folders where Finder Sync can behave differently from normal local folders.
+- The extension writes the final monitored roots to `~/Library/Logs/MacCreateFileApp.log` on startup.
+- If a cloud provider still blocks file creation after the menu appears, the next escalation is a user-granted folder access flow with security-scoped bookmarks stored for the extension without reintroducing App Group prompts.
+
 ## Bundled File Templates
 
 Implemented in `v1.0.16`:
@@ -197,7 +213,7 @@ Implemented in `v1.0.17`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.19 scripts/package_release.sh
+VERSION=1.0.20 scripts/package_release.sh
 ```
 
 ## Release Shape
