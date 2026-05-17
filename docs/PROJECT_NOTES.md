@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.21`.
+Latest implemented release in this checkout: `v1.0.22`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -196,6 +196,12 @@ Fixed in `v1.0.21`:
 - If direct file creation fails in Desktop, Documents, iCloud Drive, OneDrive, or another protected/cloud folder, the extension now creates a temporary source file inside its sandbox and asks Finder to duplicate it into the target folder through AppleScript.
 - This keeps the normal fast direct write for folders where it works and adds a Finder-mediated fallback for protected/cloud locations.
 
+Fixed in `v1.0.22`:
+
+- Added the real user home directory itself to Finder Sync monitored roots. This makes Finder call the extension for cloud-backed subfolders such as `~/Documents/Тест`, where monitoring only `~/Documents` did not consistently trigger observation.
+- Added diagnostic logs for `beginObservingDirectory`, `endObservingDirectory`, and `menu(for:)` calls. These stay useful for future Finder Sync issues and are written to the extension container log.
+- File creation now prefers `FIFinderSyncController.default().targetedURL()` over `selectedItemURLs()`. This avoids stale Finder sidebar/search selected URLs such as `myDocuments.cannedSearch` overriding the actual folder that was right-clicked.
+
 ## Bundled File Templates
 
 Implemented in `v1.0.16`:
@@ -221,7 +227,7 @@ Implemented in `v1.0.17`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.21 scripts/package_release.sh
+VERSION=1.0.22 scripts/package_release.sh
 ```
 
 ## Release Shape

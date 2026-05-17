@@ -91,7 +91,7 @@ scripts/install_local.sh
 ## Package a Release
 
 ```sh
-VERSION=1.0.21 scripts/package_release.sh
+VERSION=1.0.22 scripts/package_release.sh
 ```
 
 Release artifacts are created in `dist/`:

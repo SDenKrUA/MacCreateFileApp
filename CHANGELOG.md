@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.22 - 2026-05-17
+
+- Added the real user home folder as a Finder Sync monitored root so cloud-backed subfolders such as `Documents/Тест` are observed.
+- Added Finder Sync diagnostics for observed folders and menu requests.
+- Fixed file creation target resolution to prefer Finder's `targetedURL()` over stale selected sidebar/search URLs.
+
 ## 1.0.21 - 2026-05-17
 
 - Fixed Finder Sync cloud-folder monitoring to use the real current user's home directory instead of the extension sandbox home.

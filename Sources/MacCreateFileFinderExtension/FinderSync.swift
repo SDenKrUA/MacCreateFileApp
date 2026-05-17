@@ -41,7 +41,19 @@ final class FinderSync: FIFinderSync {
         writeLog("Monitoring Finder roots: \(monitoredURLs.map(\.path).sorted().joined(separator: ", "))")
     }
 
+    override func beginObservingDirectory(at url: URL) {
+        writeLog("beginObservingDirectory url=\(url.path)")
+    }
+
+    override func endObservingDirectory(at url: URL) {
+        writeLog("endObservingDirectory url=\(url.path)")
+    }
+
     override func menu(for menuKind: FIMenuKind) -> NSMenu? {
+        let selected = FIFinderSyncController.default().selectedItemURLs()?.map(\.path).joined(separator: ", ") ?? "nil"
+        let targeted = FIFinderSyncController.default().targetedURL()?.path ?? "nil"
+        writeLog("menu requested kind=\(menuKind.rawValue) selected=[\(selected)] targeted=\(targeted)")
+
         let menu = NSMenu(title: localized("menu.root"))
 
         let createMenu = NSMenu(title: localized("menu.createFile"))
@@ -269,15 +281,15 @@ final class FinderSync: FIFinderSync {
     }
 
     private func targetDirectory() -> URL? {
+        if let targeted = FIFinderSyncController.default().targetedURL() {
+            writeLog("targetDirectory using targetedURL=\(targeted.path)")
+            return folderURL(for: targeted)
+        }
+
         let selectedURLs = FIFinderSyncController.default().selectedItemURLs() ?? []
         if let selected = selectedURLs.first {
             writeLog("targetDirectory using selectedItemURLs first=\(selected.path)")
             return folderURL(for: selected)
-        }
-
-        if let targeted = FIFinderSyncController.default().targetedURL() {
-            writeLog("targetDirectory using targetedURL=\(targeted.path)")
-            return folderURL(for: targeted)
         }
 
         if let insertionLocation = finderInsertionLocation() {
@@ -438,6 +450,7 @@ final class FinderSync: FIFinderSync {
 
         var urls: [URL] = [
             URL(fileURLWithPath: "/", isDirectory: true),
+            home,
             home.appendingPathComponent("Desktop", isDirectory: true),
             home.appendingPathComponent("Documents", isDirectory: true),
             cloudStorage,
