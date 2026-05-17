@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.16`.
+Latest implemented release in this checkout: `v1.0.17`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -171,12 +171,20 @@ Implemented in `v1.0.16`:
   - `Blank Word.docx`
   - `Blank Excel.xlsx`
   - `Blank Presentation.pptx`
+  - `Blank Pages.pages`
+  - `Blank Numbers.numbers`
+  - `Blank Keynote.key`
+
+Implemented in `v1.0.17`:
+
+- Added `Create File > Apple iWork`.
+- Added Pages (`.pages`), Numbers (`.numbers`), and Keynote (`.key`) file creation from bundled templates.
 
 ## Build Commands
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.16 scripts/package_release.sh
+VERSION=1.0.17 scripts/package_release.sh
 ```
 
 ## Release Shape

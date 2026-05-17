@@ -1,5 +1,6 @@
 "menu.root" = "Mac Create File";
 "menu.createFile" = "Створити файл";
+"menu.appleIWork" = "Apple iWork";
 "menu.developerFileTypes" = "Developer типи";
 "menu.copyPath" = "Скопіювати шлях";
 "menu.openTerminal" = "Відкрити Terminal тут";
@@ -24,6 +25,9 @@
 "file.word" = "Word документ";
 "file.excel" = "Excel таблиця";
 "file.powerpoint" = "PowerPoint презентація";
+"file.pages" = "Pages документ";
+"file.numbers" = "Numbers таблиця";
+"file.keynote" = "Keynote презентація";
 "filename.text" = "Новий текстовий файл";
 "filename.markdown" = "Новий Markdown файл";
 "filename.rtf" = "Новий Rich Text файл";
@@ -39,3 +43,6 @@
 "filename.word" = "Новий Word документ";
 "filename.excel" = "Нова Excel таблиця";
 "filename.powerpoint" = "Нова PowerPoint презентація";
+"filename.pages" = "Новий Pages документ";
+"filename.numbers" = "Нова Numbers таблиця";
+"filename.keynote" = "Нова Keynote презентація";

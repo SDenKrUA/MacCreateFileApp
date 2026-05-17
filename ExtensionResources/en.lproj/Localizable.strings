@@ -1,5 +1,6 @@
 "menu.root" = "Mac Create File";
 "menu.createFile" = "Create File";
+"menu.appleIWork" = "Apple iWork";
 "menu.developerFileTypes" = "Developer Types";
 "menu.copyPath" = "Copy Path";
 "menu.openTerminal" = "Open Terminal Here";
@@ -24,6 +25,9 @@
 "file.word" = "Word Document";
 "file.excel" = "Excel Workbook";
 "file.powerpoint" = "PowerPoint Presentation";
+"file.pages" = "Pages Document";
+"file.numbers" = "Numbers Spreadsheet";
+"file.keynote" = "Keynote Presentation";
 "filename.text" = "New Text File";
 "filename.markdown" = "New Markdown File";
 "filename.rtf" = "New Rich Text File";
@@ -39,3 +43,6 @@
 "filename.word" = "New Word Document";
 "filename.excel" = "New Excel Workbook";
 "filename.powerpoint" = "New PowerPoint Presentation";
+"filename.pages" = "New Pages Document";
+"filename.numbers" = "New Numbers Spreadsheet";
+"filename.keynote" = "New Keynote Presentation";

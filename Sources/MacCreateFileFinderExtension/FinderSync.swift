@@ -14,6 +14,12 @@ final class FinderSync: FIFinderSync {
         .init(id: "pptx", extensionName: "pptx", nameKey: "file.powerpoint", baseNameKey: "filename.powerpoint", content: .template("Blank Presentation.pptx"))
     ]
 
+    private let iWorkFileTypes: [FileTemplate] = [
+        .init(id: "pages", extensionName: "pages", nameKey: "file.pages", baseNameKey: "filename.pages", content: .template("Blank Pages.pages")),
+        .init(id: "numbers", extensionName: "numbers", nameKey: "file.numbers", baseNameKey: "filename.numbers", content: .template("Blank Numbers.numbers")),
+        .init(id: "key", extensionName: "key", nameKey: "file.keynote", baseNameKey: "filename.keynote", content: .template("Blank Keynote.key"))
+    ]
+
     private let developerFileTypes: [FileTemplate] = [
         .init(id: "md", extensionName: "md", nameKey: "file.markdown", baseNameKey: "filename.markdown", content: .text("# New Document\n")),
         .init(id: "rtf", extensionName: "rtf", nameKey: "file.rtf", baseNameKey: "filename.rtf", content: .text("{\\rtf1\\ansi\\deff0\n}\n")),
@@ -44,6 +50,20 @@ final class FinderSync: FIFinderSync {
             )
             createMenu.addItem(item)
         }
+
+        let iWorkMenu = NSMenu(title: localized("menu.appleIWork"))
+        for template in iWorkFileTypes {
+            let item = NSMenuItem(
+                title: localized(template.nameKey),
+                action: actionSelector(for: template.id),
+                keyEquivalent: ""
+            )
+            iWorkMenu.addItem(item)
+        }
+
+        let iWorkItem = NSMenuItem(title: localized("menu.appleIWork"), action: nil, keyEquivalent: "")
+        iWorkItem.submenu = iWorkMenu
+        createMenu.addItem(iWorkItem)
 
         let developerMenu = NSMenu(title: localized("menu.developerFileTypes"))
         for template in developerFileTypes {
@@ -148,6 +168,21 @@ final class FinderSync: FIFinderSync {
     @objc(createPowerPointPresentation:)
     func createPowerPointPresentation(_ sender: NSMenuItem) {
         createFile(withID: "pptx")
+    }
+
+    @objc(createPagesDocument:)
+    func createPagesDocument(_ sender: NSMenuItem) {
+        createFile(withID: "pages")
+    }
+
+    @objc(createNumbersSpreadsheet:)
+    func createNumbersSpreadsheet(_ sender: NSMenuItem) {
+        createFile(withID: "numbers")
+    }
+
+    @objc(createKeynotePresentation:)
+    func createKeynotePresentation(_ sender: NSMenuItem) {
+        createFile(withID: "key")
     }
 
     private func createFile(withID id: String) {
@@ -270,13 +305,19 @@ final class FinderSync: FIFinderSync {
             return #selector(createExcelWorkbook(_:))
         case "pptx":
             return #selector(createPowerPointPresentation(_:))
+        case "pages":
+            return #selector(createPagesDocument(_:))
+        case "numbers":
+            return #selector(createNumbersSpreadsheet(_:))
+        case "key":
+            return #selector(createKeynotePresentation(_:))
         default:
             return #selector(createTextFile(_:))
         }
     }
 
     private var allFileTypes: [FileTemplate] {
-        fileTypes + developerFileTypes
+        fileTypes + iWorkFileTypes + developerFileTypes
     }
 
     private func menuIcon(_ kind: MenuIconKind) -> NSImage {

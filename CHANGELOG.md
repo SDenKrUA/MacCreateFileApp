@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.17 - 2026-05-17
+
+- Added an `Apple iWork` submenu under `Create File`.
+- Added Pages, Numbers, and Keynote document creation using bundled blank templates.
+
 ## 1.0.16 - 2026-05-17
 
 - Replaced generated minimal `pdf`, `docx`, `xlsx`, and `pptx` data with bundled blank template files.
