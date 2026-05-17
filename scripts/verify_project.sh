@@ -13,6 +13,6 @@ plutil -lint "$ROOT_DIR/ExtensionResources/uk.lproj/Localizable.strings"
 test -x "$ROOT_DIR/scripts/uninstall.command"
 
 swiftc -parse "$ROOT_DIR/Sources/MacCreateFileApp/MacCreateFileApp.swift"
-swiftc -parse "$ROOT_DIR/Sources/MacCreateFileFinderExtension/FinderSync.swift" "$ROOT_DIR/Sources/MacCreateFileFinderExtension/MinimalFiles.swift"
+swiftc -parse "$ROOT_DIR/Sources/MacCreateFileFinderExtension/FinderSync.swift"
 
 echo "Project files passed plist and Swift parse checks."

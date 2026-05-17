@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.16 - 2026-05-17
+
+- Replaced generated minimal `pdf`, `docx`, `xlsx`, and `pptx` data with bundled blank template files.
+- Removed `MinimalFiles.swift` and the base64/minimal OOXML fallback files.
+- PowerPoint, Word, Excel, and PDF creation now copies real blank documents from `ExtensionResources/Templates`.
+
 ## 1.0.15 - 2026-05-17
 
 - Added an `Uninstall Completely` button to the main app.

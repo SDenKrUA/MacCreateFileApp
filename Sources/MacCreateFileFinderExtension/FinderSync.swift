@@ -8,10 +8,10 @@ final class FinderSync: FIFinderSync {
 
     private let fileTypes: [FileTemplate] = [
         .init(id: "txt", extensionName: "txt", nameKey: "file.text", baseNameKey: "filename.text", content: .text("")),
-        .init(id: "pdf", extensionName: "pdf", nameKey: "file.pdf", baseNameKey: "filename.pdf", content: .data(MinimalFiles.pdf)),
-        .init(id: "docx", extensionName: "docx", nameKey: "file.word", baseNameKey: "filename.word", content: .data(MinimalFiles.docx)),
-        .init(id: "xlsx", extensionName: "xlsx", nameKey: "file.excel", baseNameKey: "filename.excel", content: .data(MinimalFiles.xlsx)),
-        .init(id: "pptx", extensionName: "pptx", nameKey: "file.powerpoint", baseNameKey: "filename.powerpoint", content: .data(MinimalFiles.pptx))
+        .init(id: "pdf", extensionName: "pdf", nameKey: "file.pdf", baseNameKey: "filename.pdf", content: .template("Blank PDF.pdf")),
+        .init(id: "docx", extensionName: "docx", nameKey: "file.word", baseNameKey: "filename.word", content: .template("Blank Word.docx")),
+        .init(id: "xlsx", extensionName: "xlsx", nameKey: "file.excel", baseNameKey: "filename.excel", content: .template("Blank Excel.xlsx")),
+        .init(id: "pptx", extensionName: "pptx", nameKey: "file.powerpoint", baseNameKey: "filename.powerpoint", content: .template("Blank Presentation.pptx"))
     ]
 
     private let developerFileTypes: [FileTemplate] = [
@@ -385,6 +385,8 @@ final class FinderSync: FIFinderSync {
         switch createError {
         case .missingTemplate:
             return localized("error.missingTemplate")
+        case .missingTemplateFile(let fileName):
+            return String(format: localized("error.missingTemplateFile"), fileName)
         case .missingTargetDirectory:
             return localized("error.missingTargetDirectory")
         case .createFileReturnedFalse(let path):
@@ -477,25 +479,30 @@ enum MenuIconKind {
 
 enum FileContent {
     case text(String)
-    case data(Data)
+    case template(String)
 
     func write(to url: URL) throws {
-        let outputData: Data
         switch self {
         case .text(let text):
-            outputData = Data(text.utf8)
-        case .data(let fileData):
-            outputData = fileData
-        }
-
-        guard FileManager.default.createFile(atPath: url.path, contents: outputData) else {
-            throw FinderCreateError.createFileReturnedFalse(url.path)
+            guard FileManager.default.createFile(atPath: url.path, contents: Data(text.utf8)) else {
+                throw FinderCreateError.createFileReturnedFalse(url.path)
+            }
+        case .template(let fileName):
+            guard let templateURL = Bundle.main.url(
+                forResource: fileName,
+                withExtension: nil,
+                subdirectory: "Templates"
+            ) else {
+                throw FinderCreateError.missingTemplateFile(fileName)
+            }
+            try FileManager.default.copyItem(at: templateURL, to: url)
         }
     }
 }
 
 enum FinderCreateError: LocalizedError {
     case missingTemplate
+    case missingTemplateFile(String)
     case missingTargetDirectory
     case createFileReturnedFalse(String)
     case openTerminalFailed(String)
@@ -504,6 +511,8 @@ enum FinderCreateError: LocalizedError {
         switch self {
         case .missingTemplate:
             return "The selected file type could not be resolved."
+        case .missingTemplateFile(let fileName):
+            return "The bundled template file is missing: \(fileName)"
         case .missingTargetDirectory:
             return "Finder did not provide a target folder. Open a Finder folder window and try right-clicking inside the file list area."
         case .createFileReturnedFalse(let path):

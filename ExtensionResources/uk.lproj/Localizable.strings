@@ -5,6 +5,7 @@
 "menu.openTerminal" = "Відкрити Terminal тут";
 "error.createFailed" = "Не вдалося створити файл";
 "error.missingTemplate" = "Не вдалося визначити вибраний тип файлу.";
+"error.missingTemplateFile" = "Файл шаблону всередині додатку відсутній: %@";
 "error.missingTargetDirectory" = "Finder не передав цільову папку. Відкрий вікно Finder з папкою і натисни правою кнопкою всередині списку файлів.";
 "error.createReturnedFalse" = "Не вдалося створити файл тут: %@";
 "error.openTerminalFailed" = "Не вдалося відкрити Terminal тут: %@";

@@ -2,7 +2,7 @@
 
 ## Current State
 
-Latest implemented release in this checkout: `v1.0.15`.
+Latest implemented release in this checkout: `v1.0.16`.
 
 The app is a clean Swift/macOS implementation, not a fork of another project. It provides a Finder Sync extension with a `Create File` submenu.
 
@@ -159,11 +159,24 @@ Updated in `v1.0.14`:
 - The extension now draws its own 16x16 outline menu icons.
 - Icon stroke color is selected from `NSApp.effectiveAppearance`: light stroke in dark mode, dark stroke in light mode.
 
+## Bundled File Templates
+
+Implemented in `v1.0.16`:
+
+- `pdf`, `docx`, `xlsx`, and `pptx` are copied from real blank files in `ExtensionResources/Templates`.
+- Text/code-oriented file types still use generated text content.
+- `MinimalFiles.swift` was removed because minimal hand-built OOXML/PDF files were not compatible enough with strict apps such as Keynote.
+- Current bundled templates:
+  - `Blank PDF.pdf`
+  - `Blank Word.docx`
+  - `Blank Excel.xlsx`
+  - `Blank Presentation.pptx`
+
 ## Build Commands
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.15 scripts/package_release.sh
+VERSION=1.0.16 scripts/package_release.sh
 ```
 
 ## Release Shape

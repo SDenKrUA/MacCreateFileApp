@@ -6,6 +6,7 @@ Mac Create File — це macOS утиліта, яка додає у Finder ме�
 
 - Додає підменю `Створити файл` у контекстне меню Finder.
 - Створює основні типи файлів: `txt`, `pdf`, `docx`, `xlsx`, `pptx`.
+- Використовує вбудовані порожні шаблони для `pdf`, `docx`, `xlsx`, `pptx`, щоб файли краще відкривались у Keynote, PowerPoint, Word та Excel.
 - Додає вкладене підменю `Developer типи` для `md`, `rtf`, `csv`, `json`, `html`, `css`, `js`, `py`, `swift`, `sh`.
 - Не перезаписує існуючі файли, а автоматично додає номер, наприклад `Новий текстовий файл 2.txt`.
 - Виділяє створений файл у Finder.
@@ -89,13 +90,13 @@ scripts/install_local.sh
 ## Релізний пакет
 
 ```sh
-VERSION=1.0.11 scripts/package_release.sh
+VERSION=1.0.16 scripts/package_release.sh
 ```
 
 Файли релізу створюються у `dist/`:
 
 ```text
-MacCreateFile-1.0.11-mac-<arch>.zip
+MacCreateFile-1.0.16-mac-<arch>.zip
 ```
 
 ## Що всередині

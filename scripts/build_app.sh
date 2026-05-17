@@ -46,7 +46,6 @@ swiftc \
   -Xlinker -e \
   -Xlinker _NSExtensionMain \
   "$ROOT_DIR/Sources/MacCreateFileFinderExtension/FinderSync.swift" \
-  "$ROOT_DIR/Sources/MacCreateFileFinderExtension/MinimalFiles.swift" \
   -o "$EXT_MACOS/MacCreateFileFinderExtension"
 
 cp "$ROOT_DIR/Info-App.plist" "$APP_CONTENTS/Info.plist"
@@ -54,8 +53,11 @@ cp "$ROOT_DIR/Info-Extension.plist" "$EXT_CONTENTS/Info.plist"
 cp -R "$ROOT_DIR/Resources/." "$APP_RESOURCES/"
 cp -R "$ROOT_DIR/ExtensionResources/." "$EXT_RESOURCES/"
 
+/usr/bin/xattr -cr "$APP_BUNDLE" "$EXT_BUNDLE" 2>/dev/null || true
+
 /usr/bin/swift "$ROOT_DIR/scripts/generate_app_icon.swift" "$BUILD_DIR"
 /usr/bin/iconutil -c icns "$ICONSET_DIR" -o "$APP_ICON"
+/usr/bin/xattr -cr "$APP_BUNDLE" "$EXT_BUNDLE" 2>/dev/null || true
 
 codesign --force --sign "$SIGN_IDENTITY" --entitlements "$ROOT_DIR/Entitlements-Extension.plist" "$EXT_BUNDLE"
 codesign --force --sign "$SIGN_IDENTITY" "$APP_BUNDLE"

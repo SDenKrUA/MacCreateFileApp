@@ -5,6 +5,7 @@
 "menu.openTerminal" = "Open Terminal Here";
 "error.createFailed" = "Could not create the file";
 "error.missingTemplate" = "The selected file type could not be resolved.";
+"error.missingTemplateFile" = "The bundled template file is missing: %@";
 "error.missingTargetDirectory" = "Finder did not provide a target folder. Open a Finder folder window and right-click inside the file list area.";
 "error.createReturnedFalse" = "The file could not be created at: %@";
 "error.openTerminalFailed" = "Terminal could not be opened at: %@";
