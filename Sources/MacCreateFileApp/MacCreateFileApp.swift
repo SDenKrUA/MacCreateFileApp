@@ -7,11 +7,17 @@ struct MacCreateFileApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(appWindowTitle) {
             ContentView()
-                .frame(width: 620, height: 420)
+                .frame(width: 620, height: 410)
         }
+        .defaultPosition(.center)
         .windowResizability(.contentSize)
+    }
+
+    private var appWindowTitle: String {
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        return "Mac Create File v \(version ?? "unknown")"
     }
 }
 
@@ -27,16 +33,9 @@ struct ContentView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("app.title")
-                    .font(.system(size: 30, weight: .semibold))
-                Text(appDisplayVersion)
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-                Text("app.subtitle")
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            Text("app.subtitle")
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
 
             VStack(alignment: .leading, spacing: 12) {
                 ActionButton(title: String(localized: "button.enableExtension"), systemImage: "puzzlepiece.extension") {
@@ -70,12 +69,15 @@ struct ContentView: View {
 
             Spacer()
         }
-        .padding(28)
+        .padding(.horizontal, 28)
+        .padding(.top, 56)
+        .padding(.bottom, 28)
+        .background(WindowTitleSetter(title: windowTitle))
     }
 
-    private var appDisplayVersion: String {
+    private var windowTitle: String {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-        return String(format: String(localized: "app.version"), version ?? "unknown")
+        return "Mac Create File v \(version ?? "unknown")"
     }
 
     private func enableExtension() {
@@ -188,6 +190,47 @@ struct ContentView: View {
         } else {
             statusMessage = String(format: String(localized: "status.uninstallPartial"), failures.joined(separator: "\n"))
         }
+    }
+}
+
+struct WindowTitleSetter: NSViewRepresentable {
+    let title: String
+
+    func makeNSView(context: Context) -> NSView {
+        WindowTitleView(title: title)
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        if let titleView = nsView as? WindowTitleView {
+            titleView.title = title
+        }
+    }
+}
+
+final class WindowTitleView: NSView {
+    var title: String {
+        didSet {
+            applyTitle()
+        }
+    }
+
+    init(title: String) {
+        self.title = title
+        super.init(frame: .zero)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        nil
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        applyTitle()
+    }
+
+    private func applyTitle() {
+        window?.title = title
     }
 }
 

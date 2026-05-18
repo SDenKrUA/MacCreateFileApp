@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.1.1 - 2026-05-18
+
+- Moved the visible app name and version into the macOS window title bar as `Mac Create File v 1.1.1`.
+- Removed the large duplicate in-window `Mac Create File` heading and the separate version line so the content no longer overlaps or clips under the title bar.
+- Added explicit top padding so the content starts below the macOS title bar.
+
 ## 1.1 - 2026-05-18
 
 - Show the app version directly under `Mac Create File` in the main window.

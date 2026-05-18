@@ -1,5 +1,4 @@
 "app.title" = "Mac Create File";
-"app.version" = "Version %@";
 "app.subtitle" = "Adds a Finder menu for creating new files in the current folder.";
 "app.toolbarHint" = "After enabling the Finder extension, add Mac Create File to the Finder toolbar from Finder's toolbar customization screen. The toolbar menu is available even in folders where macOS does not show the right-click extension menu.";
 "button.enableExtension" = "Enable Finder Extension";

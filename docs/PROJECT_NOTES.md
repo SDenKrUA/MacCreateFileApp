@@ -221,6 +221,12 @@ Investigated on 2026-05-18:
 - The broad `com.apple.security.temporary-exception.files.absolute-path.read-write = /` entitlement was tested. It is riskier than a narrow entitlement but remains useful for local GitHub builds because direct sandbox writes to cloud-backed `Documents` can otherwise fail before the Finder-mediated AppleScript fallback runs.
 - Current conclusion: with public Finder Sync behavior on this Mac, native Finder background context menu insertion works in local folders but is not called in this iCloud/File Provider folder. A true right-click workaround would require a separate Accessibility/Input Monitoring helper that shows its own menu, not a native Finder menu item.
 
+Changed in `v1.1.1` on 2026-05-18:
+
+- The large content heading was removed from the main app window because it duplicated the macOS title bar and could be clipped by the title bar on real systems.
+- The window title is now set as `Mac Create File v <CFBundleShortVersionString>`, with an `NSViewRepresentable` applying the title to the attached `NSWindow`, so the app name and version appear in the top window chrome instead of inside the content.
+- The main content now uses explicit top padding so the subtitle and controls start below the macOS title bar instead of sliding underneath it.
+
 Changed in `v1.1` on 2026-05-18:
 
 - The main app title area now shows the app version from `CFBundleShortVersionString`, so the visible window title tracks release metadata.
@@ -262,7 +268,7 @@ Implemented in `v1.0.17`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.1 scripts/package_release.sh
+VERSION=1.1.1 scripts/package_release.sh
 ```
 
 ## Release Shape

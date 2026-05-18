@@ -1,5 +1,4 @@
 "app.title" = "Mac Create File";
-"app.version" = "Версія %@";
 "app.subtitle" = "Додає у Finder меню для створення нових файлів у поточній папці.";
 "app.toolbarHint" = "Після увімкнення Finder extension додай Mac Create File на панель інструментів Finder через налаштування панелі. Меню з панелі інструментів доступне навіть у папках, де macOS не показує extension у меню правої кнопки.";
 "button.enableExtension" = "Увімкнути Finder Extension";
