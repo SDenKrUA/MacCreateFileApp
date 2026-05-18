@@ -31,6 +31,7 @@ swiftc \
   -module-name MacCreateFileApp \
   -parse-as-library \
   -framework AppKit \
+  -framework FinderSync \
   -framework SwiftUI \
   "$ROOT_DIR/Sources/MacCreateFileApp/MacCreateFileApp.swift" \
   -o "$APP_MACOS/MacCreateFileApp"
@@ -60,6 +61,6 @@ cp -R "$ROOT_DIR/ExtensionResources/." "$EXT_RESOURCES/"
 /usr/bin/xattr -cr "$APP_BUNDLE" "$EXT_BUNDLE" 2>/dev/null || true
 
 codesign --force --sign "$SIGN_IDENTITY" --entitlements "$ROOT_DIR/Entitlements-Extension.plist" "$EXT_BUNDLE"
-codesign --force --sign "$SIGN_IDENTITY" "$APP_BUNDLE"
+codesign --force --sign "$SIGN_IDENTITY" --entitlements "$ROOT_DIR/Entitlements-App.plist" "$APP_BUNDLE"
 
 echo "Built: $APP_BUNDLE"

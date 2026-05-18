@@ -1,10 +1,11 @@
 # Mac Create File
 
-Mac Create File — це macOS утиліта, яка додає у Finder меню правої кнопки для створення нових файлів у поточній папці. Проєкт створений з нуля на Swift як native macOS app + Finder Sync extension.
+Mac Create File — це macOS утиліта, яка додає у Finder меню для створення нових файлів у поточній папці. Проєкт створений з нуля на Swift як native macOS app + Finder Sync extension.
 
 ## Можливості
 
 - Додає підменю `Створити файл` у контекстне меню Finder.
+- Додає кнопку на панель інструментів Finder з тим самим меню для папок, де macOS не показує extension у меню правої кнопки.
 - Створює основні типи файлів: `txt`, `pdf`, `docx`, `xlsx`, `pptx`.
 - Використовує вбудовані порожні шаблони для `pdf`, `docx`, `xlsx`, `pptx`, щоб файли краще відкривались у Keynote, PowerPoint, Word та Excel.
 - Додає підменю `Apple iWork` для Pages (`pages`), Numbers (`numbers`) і Keynote (`key`) файлів.
@@ -27,11 +28,26 @@ Mac Create File — це macOS утиліта, яка додає у Finder ме�
 3. Перемісти `Mac Create File.app` у `Applications`.
 4. Відкрий `Applications/Mac Create File.app`.
 5. Натисни `Увімкнути Finder Extension`.
-6. Натисни `Відкрити налаштування extension` і вручну увімкни `Mac Create File Finder Extension`, якщо macOS попросить це зробити.
+6. Якщо macOS все ще вимагає ручне підтвердження, додаток сам відкриє налаштування extension. Увімкни там `Mac Create File Finder Extension`.
 7. Перезапусти Finder з додатку або перелогінься.
 8. Натисни правою кнопкою у папці Finder і вибери `Створити файл`.
+9. Додатково: у Finder відкрий налаштування панелі інструментів і перетягни `Mac Create File` на панель.
 
-macOS не завжди дозволяє стороннім додаткам повністю автоматично вмикати Finder extensions, тому ручне підтвердження в System Settings може бути обовʼязковим.
+macOS не дозволяє стороннім додаткам без участі користувача видати собі всі дозволи для Finder extension. Mac Create File реєструє extension, просить macOS увімкнути його, відкриває потрібне вікно налаштувань, якщо треба, а фінальний toggle підтверджує користувач.
+
+## Хмарні папки і панель інструментів Finder
+
+У деяких папках iCloud Drive, OneDrive, Dropbox, Google Drive та інших File Provider-сервісів Finder не завжди показує сторонні extension-елементи в меню правої кнопки на фоні папки. Це поведінка Finder/macOS, а не помилка Mac Create File.
+
+Для таких папок використовуй кнопку на панелі Finder:
+
+1. Відкрий Finder.
+2. Обери `View > Customize Toolbar`.
+3. Перетягни `Mac Create File` на панель інструментів Finder.
+4. Відкрий потрібну хмарну папку.
+5. Натисни кнопку `Mac Create File` на панелі і вибери тип файлу.
+
+Створення файлів у таких хмарних папках має працювати через меню кнопки на панелі інструментів, навіть якщо меню правої кнопки там не зʼявляється.
 
 ## Видалення
 
@@ -91,13 +107,13 @@ scripts/install_local.sh
 ## Релізний пакет
 
 ```sh
-VERSION=1.0.23 scripts/package_release.sh
+VERSION=1.1 scripts/package_release.sh
 ```
 
 Файли релізу створюються у `dist/`:
 
 ```text
-MacCreateFile-1.0.17-mac-<arch>.zip
+MacCreateFile-1.1-mac-<arch>.zip
 ```
 
 ## Що всередині

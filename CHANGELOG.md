@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+## 1.1 - 2026-05-18
+
+- Show the app version directly under `Mac Create File` in the main window.
+- After `Enable Finder Extension`, the app now checks Finder Sync extension status and opens Extension Settings automatically when macOS still requires manual confirmation.
+- Documented that macOS requires the user to approve Finder extension permissions manually when the system asks for it.
+- Expanded README instructions for iCloud Drive, OneDrive, Dropbox, Google Drive, and other File Provider-backed folders where Finder may hide the right-click extension menu.
+- Added a Finder toolbar button through the Finder Sync extension. Its dropdown uses the same `Create File`, `Copy Path`, and `Open Terminal Here` actions as the context menu.
+- Added toolbar diagnostics for `selectedItemURLs`, `targetedURL`, and Finder insertion location so cloud-folder behavior can be verified from logs.
+- Replaced custom-drawn `Create File` and `Copy Path` menu icons with native SF Symbols (`doc` and `doc.on.doc`) to better match Finder's system icons.
+- Removed the failed `Allowed Folders` UI and bookmark flow from the main app and extension.
+- Removed the app-level `NSServices` fallback to avoid duplicate system menu entries.
+- Removed unused App Group/bookmark entitlements.
+- Kept the main app without sandbox entitlements so its `pluginkit` registration commands can keep working.
+- Kept the Finder extension's temporary absolute-path read/write entitlement so direct creation can work in cloud-backed folders without relying on Automation permission.
+
 ## 1.0.23 - 2026-05-17
 
 - Added an `Allowed Folders` section to the main app for cloud/protected folders.

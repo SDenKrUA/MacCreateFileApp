@@ -1,10 +1,11 @@
 # Mac Create File
 
-Mac Create File is a macOS utility that adds a Finder right-click menu for creating new files in the current folder. It is built from scratch as a small native Swift app with a Finder Sync extension.
+Mac Create File is a macOS utility that adds Finder menus for creating new files in the current folder. It is built from scratch as a small native Swift app with a Finder Sync extension.
 
 ## Features
 
 - Adds a `Create File` submenu to Finder context menus.
+- Adds a Finder toolbar button with the same menu for folders where macOS does not show third-party right-click extension items.
 - Creates common file types: `txt`, `pdf`, `docx`, `xlsx`, and `pptx`.
 - Uses bundled blank templates for `pdf`, `docx`, `xlsx`, and `pptx` for better compatibility with apps such as Keynote, PowerPoint, Word, and Excel.
 - Adds an `Apple iWork` submenu for Pages (`pages`), Numbers (`numbers`), and Keynote (`key`) files.
@@ -27,11 +28,26 @@ Mac Create File is a macOS utility that adds a Finder right-click menu for creat
 3. Move `Mac Create File.app` to `Applications`.
 4. Open `Applications/Mac Create File.app`.
 5. Click `Enable Finder Extension`.
-6. Click `Open Extension Settings` and enable `Mac Create File Finder Extension` if macOS asks for manual confirmation.
+6. If macOS still requires manual confirmation, the app opens Extension Settings automatically. Enable `Mac Create File Finder Extension` there.
 7. Restart Finder from the app, or log out and back in.
 8. Right-click inside a Finder folder and choose `Create File`.
+9. Optional: in Finder, open toolbar customization and drag `Mac Create File` into the toolbar.
 
-macOS does not allow third-party apps to silently enable Finder extensions in every case. Manual confirmation in System Settings may be required.
+macOS does not allow third-party apps to silently grant every Finder extension permission. Mac Create File registers and requests the extension, opens the correct settings screen when needed, and then waits for the user-approved macOS toggle.
+
+## Cloud Folders and Finder Toolbar
+
+Some iCloud Drive, OneDrive, Dropbox, Google Drive, and other File Provider-backed folders do not always show third-party Finder extension items in the background right-click menu. This is controlled by Finder/macOS, not by Mac Create File.
+
+For those folders, use the Finder toolbar button:
+
+1. Open Finder.
+2. Choose `View > Customize Toolbar`.
+3. Drag `Mac Create File` into the Finder toolbar.
+4. Open the cloud-backed folder.
+5. Click the `Mac Create File` toolbar button and choose the file type.
+
+File creation in these cloud-backed folders is expected to work from the toolbar menu even when the right-click background menu is missing.
 
 ## Uninstall
 
@@ -91,13 +107,13 @@ scripts/install_local.sh
 ## Package a Release
 
 ```sh
-VERSION=1.0.23 scripts/package_release.sh
+VERSION=1.1 scripts/package_release.sh
 ```
 
 Release artifacts are created in `dist/`:
 
 ```text
-MacCreateFile-1.0.17-mac-<arch>.zip
+MacCreateFile-1.1-mac-<arch>.zip
 ```
 
 ## Signing

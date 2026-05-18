@@ -6,7 +6,7 @@ import FinderSync
 final class FinderSync: FIFinderSync {
     private let logFileURL = URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
         .appendingPathComponent("Library/Logs/MacCreateFileApp.log")
-    private var activeSecurityScopedURLs: [URL] = []
+    private var lastMenuTargetDirectoryURL: URL?
 
     private let fileTypes: [FileTemplate] = [
         .init(id: "txt", extensionName: "txt", nameKey: "file.text", baseNameKey: "filename.text", content: .text("")),
@@ -42,6 +42,18 @@ final class FinderSync: FIFinderSync {
         writeLog("Monitoring Finder roots: \(monitoredURLs.map(\.path).sorted().joined(separator: ", "))")
     }
 
+    override var toolbarItemName: String {
+        localized("menu.root")
+    }
+
+    override var toolbarItemToolTip: String {
+        localized("toolbar.tooltip")
+    }
+
+    override var toolbarItemImage: NSImage {
+        systemIcon("doc.badge.plus", fallback: .createFile)
+    }
+
     override func beginObservingDirectory(at url: URL) {
         writeLog("beginObservingDirectory url=\(url.path)")
     }
@@ -51,9 +63,20 @@ final class FinderSync: FIFinderSync {
     }
 
     override func menu(for menuKind: FIMenuKind) -> NSMenu? {
-        let selected = FIFinderSyncController.default().selectedItemURLs()?.map(\.path).joined(separator: ", ") ?? "nil"
-        let targeted = FIFinderSyncController.default().targetedURL()?.path ?? "nil"
-        writeLog("menu requested kind=\(menuKind.rawValue) selected=[\(selected)] targeted=\(targeted)")
+        let controller = FIFinderSyncController.default()
+        let selectedURLs = controller.selectedItemURLs() ?? []
+        let targetedURL = controller.targetedURL()
+        let menuTargetDirectory = resolvedTargetDirectory(
+            targetedURL: targetedURL,
+            selectedURLs: selectedURLs,
+            insertionURL: nil
+        )
+        lastMenuTargetDirectoryURL = menuTargetDirectory
+
+        let selected = selectedURLs.map(\.path).joined(separator: ", ")
+        let targeted = targetedURL?.path ?? "nil"
+        let menuTarget = menuTargetDirectory?.path ?? "nil"
+        writeLog("menu requested kind=\(menuKind.rawValue) selected=[\(selected)] targeted=\(targeted) menuTarget=\(menuTarget)")
 
         let menu = NSMenu(title: localized("menu.root"))
 
@@ -224,6 +247,7 @@ final class FinderSync: FIFinderSync {
             showError(FinderCreateError.missingTargetDirectory)
             return
         }
+        lastMenuTargetDirectoryURL = nil
 
         writeLog("createFile target directory=\(directory.path)")
 
@@ -291,18 +315,43 @@ final class FinderSync: FIFinderSync {
     }
 
     private func targetDirectory() -> URL? {
-        if let targeted = FIFinderSyncController.default().targetedURL() {
+        if let menuTarget = lastMenuTargetDirectoryURL {
+            writeLog("targetDirectory using menu target=\(menuTarget.path)")
+            return menuTarget
+        }
+
+        let controller = FIFinderSyncController.default()
+        if let directory = resolvedTargetDirectory(
+            targetedURL: controller.targetedURL(),
+            selectedURLs: controller.selectedItemURLs() ?? [],
+            insertionURL: nil
+        ) {
+            return directory
+        }
+
+        return resolvedTargetDirectory(
+            targetedURL: nil,
+            selectedURLs: [],
+            insertionURL: finderInsertionLocation()
+        )
+    }
+
+    private func resolvedTargetDirectory(
+        targetedURL: URL?,
+        selectedURLs: [URL],
+        insertionURL: URL?
+    ) -> URL? {
+        if let targeted = targetedURL {
             writeLog("targetDirectory using targetedURL=\(targeted.path)")
             return folderURL(for: targeted)
         }
 
-        let selectedURLs = FIFinderSyncController.default().selectedItemURLs() ?? []
         if let selected = selectedURLs.first {
             writeLog("targetDirectory using selectedItemURLs first=\(selected.path)")
             return folderURL(for: selected)
         }
 
-        if let insertionLocation = finderInsertionLocation() {
+        if let insertionLocation = insertionURL {
             writeLog("targetDirectory using Finder insertion location=\(insertionLocation.path)")
             return folderURL(for: insertionLocation)
         }
@@ -359,6 +408,30 @@ final class FinderSync: FIFinderSync {
     }
 
     private func menuIcon(_ kind: MenuIconKind) -> NSImage {
+        let symbolName: String
+        switch kind {
+        case .createFile:
+            symbolName = "doc"
+        case .copyPath:
+            symbolName = "doc.on.doc"
+        case .terminal:
+            symbolName = "terminal"
+        }
+
+        return systemIcon(symbolName, fallback: kind)
+    }
+
+    private func systemIcon(_ symbolName: String, fallback kind: MenuIconKind) -> NSImage {
+        if let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: localized(kind.accessibilityKey)) {
+            image.size = NSSize(width: 16, height: 16)
+            image.isTemplate = true
+            return image
+        }
+
+        return drawnFallbackIcon(kind)
+    }
+
+    private func drawnFallbackIcon(_ kind: MenuIconKind) -> NSImage {
         let size = NSSize(width: 16, height: 16)
         let image = NSImage(size: size)
         image.lockFocus()
@@ -452,12 +525,10 @@ final class FinderSync: FIFinderSync {
     }
 
     private func monitoredDirectoryURLs() -> Set<URL> {
-        let fileManager = FileManager.default
         let home = realHomeDirectoryURL()
         let cloudStorage = home.appendingPathComponent("Library/CloudStorage", isDirectory: true)
         let mobileDocuments = home.appendingPathComponent("Library/Mobile Documents", isDirectory: true)
         let iCloudDrive = mobileDocuments.appendingPathComponent("com~apple~CloudDocs", isDirectory: true)
-        let allowedFolders = securityScopedAllowedFolderURLs()
 
         var urls: [URL] = [
             home,
@@ -474,8 +545,11 @@ final class FinderSync: FIFinderSync {
             urls.append(contentsOf: cloudProviders)
         }
 
-        urls.append(contentsOf: allowedFolders)
+        return existingDirectorySet(urls)
+    }
 
+    private func existingDirectorySet(_ urls: [URL]) -> Set<URL> {
+        let fileManager = FileManager.default
         return Set(urls.filter { url in
             var isDirectory: ObjCBool = false
             return fileManager.fileExists(atPath: url.path, isDirectory: &isDirectory) && isDirectory.boolValue
@@ -489,62 +563,6 @@ final class FinderSync: FIFinderSync {
         }
 
         return URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
-    }
-
-    private func securityScopedAllowedFolderURLs() -> [URL] {
-        activeSecurityScopedURLs.forEach { $0.stopAccessingSecurityScopedResource() }
-        activeSecurityScopedURLs.removeAll()
-
-        let records = AllowedFolderStore.load()
-        writeLog("Allowed folders loaded count=\(records.count)")
-
-        return records.compactMap { record in
-            var isStale = false
-            do {
-                let url = try URL(
-                    resolvingBookmarkData: record.bookmarkData,
-                    options: [.withSecurityScope],
-                    relativeTo: nil,
-                    bookmarkDataIsStale: &isStale
-                )
-
-                if isStale {
-                    writeLog("Allowed folder bookmark is stale path=\(record.path)")
-                }
-
-                if url.startAccessingSecurityScopedResource() {
-                    activeSecurityScopedURLs.append(url)
-                    writeLog("Allowed folder access started path=\(url.path)")
-                } else {
-                    writeLog("Allowed folder access not needed or denied path=\(url.path)")
-                }
-
-                return url
-            } catch {
-                writeLog("Allowed folder security bookmark failed path=\(record.path) error=\(error.localizedDescription)")
-
-                do {
-                    let url = try URL(
-                        resolvingBookmarkData: record.bookmarkData,
-                        options: [],
-                        relativeTo: nil,
-                        bookmarkDataIsStale: &isStale
-                    )
-                    writeLog("Allowed folder resolved without security scope path=\(url.path)")
-                    return url
-                } catch {
-                    let fallbackURL = URL(fileURLWithPath: record.path, isDirectory: true)
-                    var isDirectory: ObjCBool = false
-                    if FileManager.default.fileExists(atPath: fallbackURL.path, isDirectory: &isDirectory), isDirectory.boolValue {
-                        writeLog("Allowed folder using stored path fallback path=\(fallbackURL.path)")
-                        return fallbackURL
-                    }
-
-                    writeLog("Allowed folder path fallback missing path=\(record.path) error=\(error.localizedDescription)")
-                    return nil
-                }
-            }
-        }
     }
 
     private func directoryChildren(of url: URL) -> [URL]? {
@@ -780,37 +798,6 @@ enum FinderCreateError: LocalizedError {
             return "Finder could not copy the new file to: \(path)"
         case .openTerminalFailed(let path):
             return "Terminal could not be opened at: \(path)"
-        }
-    }
-}
-
-struct AllowedFolderRecord {
-    let name: String
-    let path: String
-    let bookmarkData: Data
-}
-
-enum AllowedFolderStore {
-    static let extensionID = "com.sdenkrua.MacCreateFileApp.FinderExtension"
-
-    static var storeURL: URL {
-        URL(fileURLWithPath: NSHomeDirectory(), isDirectory: true)
-            .appendingPathComponent("Library/Application Support/MacCreateFileApp/AllowedFolders.plist")
-    }
-
-    static func load() -> [AllowedFolderRecord] {
-        guard let items = NSArray(contentsOf: storeURL) as? [[String: Any]] else {
-            return []
-        }
-
-        return items.compactMap { item in
-            guard let name = item["name"] as? String,
-                  let path = item["path"] as? String,
-                  let bookmarkData = item["bookmarkData"] as? Data else {
-                return nil
-            }
-
-            return AllowedFolderRecord(name: name, path: path, bookmarkData: bookmarkData)
         }
     }
 }

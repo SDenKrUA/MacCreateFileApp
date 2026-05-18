@@ -211,6 +211,32 @@ Added in `v1.0.23`:
 - The Finder extension reads allowed folder bookmarks, starts security-scoped access when available, and adds those folders to `directoryURLs` on top of the default roots.
 - If a bookmark cannot be resolved, the extension logs the failure and falls back to the stored path as a monitored folder so diagnostics remain possible.
 
+Investigated on 2026-05-18:
+
+- `~/Documents` and `~/Desktop` can be File Provider-backed even though they look like normal home folders. On the test Mac they carry `com.apple.file-provider-domain-id = com.apple.CloudDocs.iCloudDriveFileProvider/...`.
+- In `~/Documents/Тест`, Finder calls `beginObservingDirectory`, so the monitored roots are accepted, but Finder does not call `menu(for:)` for the background context menu. The same installed extension still receives `menu(for:)` and shows the menu in local folders such as `~/Downloads`.
+- Adding Desktop and `~/Documents/Тест` to Allowed Folders did not make Finder call `menu(for:)` in that File Provider folder. The bookmarks currently resolve only as stored paths in local ad-hoc builds; `withSecurityScope` logs `The file couldn't be opened because it isn't in the correct format`.
+- App Services and Automator Quick Action fallbacks were tested. They register in Finder Services, but Finder does not insert them into the background right-click menu for this iCloud/File Provider folder.
+- A diagnostic unsandboxed Finder extension build did not register with PlugInKit, so the extension must remain sandboxed.
+- The broad `com.apple.security.temporary-exception.files.absolute-path.read-write = /` entitlement was tested. It is riskier than a narrow entitlement but remains useful for local GitHub builds because direct sandbox writes to cloud-backed `Documents` can otherwise fail before the Finder-mediated AppleScript fallback runs.
+- Current conclusion: with public Finder Sync behavior on this Mac, native Finder background context menu insertion works in local folders but is not called in this iCloud/File Provider folder. A true right-click workaround would require a separate Accessibility/Input Monitoring helper that shows its own menu, not a native Finder menu item.
+
+Changed in `v1.1` on 2026-05-18:
+
+- The main app title area now shows the app version from `CFBundleShortVersionString`, so the visible window title tracks release metadata.
+- `Enable Finder Extension` now checks `FIFinderSyncController.isExtensionEnabled` after registering/enabling the extension. If macOS still requires confirmation, the app opens Extension Settings automatically and explains that the user must enable the Finder extension there.
+- README instructions now document the real macOS permission boundary: the app can register the extension and open the correct settings screen, but macOS still requires user approval for the Finder extension toggle when prompted.
+- README instructions now include a dedicated cloud/File Provider section explaining that toolbar usage is required in cloud-backed folders where Finder does not call the background right-click extension menu.
+- Added the Finder Sync toolbar item by implementing `toolbarItemName`, `toolbarItemToolTip`, and `toolbarItemImage`.
+- The extension now serves the same menu for `FIMenuKind.toolbarItemMenu` as for the context-menu paths. Apple documents that toolbar menu requests are made even when the selected/targeted Finder item is outside the extension's monitored folders, so this is the best native Finder Sync path for cloud folders where the background right-click menu is not called.
+- Toolbar and context-menu requests now log selected URLs, targeted URL, and resolved menu target. Use `tail -100 ~/Library/Containers/com.sdenkrua.MacCreateFileApp.FinderExtension/Data/Library/Logs/MacCreateFileApp.log` after opening the toolbar menu to confirm which folder Finder supplied.
+- If the toolbar menu request does not include a target, the selected action asks Finder again at action time. The previously tested `beginObservingDirectory` fallback was intentionally not used because multiple open Finder windows can make the last observed folder unrelated to the toolbar window.
+- Removed the `Allowed Folders` UI and bookmark path because it did not make Finder call `menu(for:)` for the tested iCloud/File Provider background context menu.
+- Removed the app `NSServices` fallback because it added a second system integration path and could create duplicate Finder/system menu entries.
+- Kept `Entitlements-App.plist` as an empty entitlement file so the app bundle can still be signed while avoiding the sandbox restriction that previously blocked `pluginkit` extension registration.
+- Replaced custom-drawn menu icons with native SF Symbols: `doc` for `Create File` and `doc.on.doc` for `Copy Path`.
+- The extension keeps the temporary absolute-path read/write entitlement so direct creation in cloud-backed folders can succeed without depending on Automation permission. AppleScript remains only as a fallback path.
+
 ## Bundled File Templates
 
 Implemented in `v1.0.16`:
@@ -236,7 +262,7 @@ Implemented in `v1.0.17`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.0.23 scripts/package_release.sh
+VERSION=1.1 scripts/package_release.sh
 ```
 
 ## Release Shape

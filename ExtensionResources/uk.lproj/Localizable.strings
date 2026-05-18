@@ -1,4 +1,5 @@
 "menu.root" = "Mac Create File";
+"toolbar.tooltip" = "Створити новий файл у поточній папці Finder";
 "menu.createFile" = "Створити файл";
 "menu.appleIWork" = "Apple iWork";
 "menu.developerFileTypes" = "Developer типи";

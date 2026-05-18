@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 plutil -lint "$ROOT_DIR/Info-App.plist"
 plutil -lint "$ROOT_DIR/Info-Extension.plist"
+plutil -lint "$ROOT_DIR/Entitlements-App.plist"
 plutil -lint "$ROOT_DIR/Entitlements-Extension.plist"
 plutil -lint "$ROOT_DIR/Resources/en.lproj/Localizable.strings"
 plutil -lint "$ROOT_DIR/Resources/uk.lproj/Localizable.strings"
