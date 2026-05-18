@@ -147,4 +147,5 @@ macOS selects the language based on the user's system language preferences.
 
 ## License
 
+License: MIT
 This project was independently implemented in Swift. It may share a similar general purpose with other Finder file-creation utilities, but no external application source code was copied into this repository.
