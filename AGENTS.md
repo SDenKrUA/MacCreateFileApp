@@ -7,7 +7,7 @@
 - Before code changes, provide a clear implementation plan and ask for permission.
 - After code changes, update documentation and changelog.
 - Keep fixes practical and based on real diagnostics. Do not guess.
-- Build/release artifacts are `.app` inside `.zip`, not `.dmg`.
+- Build/release artifacts are `.dmg` installer images. Do not publish `.zip` releases unless explicitly requested.
 
 ## Project Summary
 
@@ -25,7 +25,7 @@ Architecture:
 
 Current behavior:
 
-- The release package is a `.zip` containing `Mac Create File.app`.
+- The release package is a `.dmg` containing `Mac Create File.app`, an `Applications` shortcut, and `uninstall.command`.
 - The Finder extension is registered and enabled with `pluginkit`.
 - File creation uses explicit Objective-C selectors per file type.
 - Diagnostics are written to `~/Library/Logs/MacCreateFileApp.log`.
@@ -74,7 +74,7 @@ PlugInKit status markers:
 Implemented uninstall-flow pieces:
 
 - Keep the `Disable Finder Extension` button working.
-- Keep `scripts/uninstall.command` executable and included in release `.zip`.
+- Keep `scripts/uninstall.command` executable and included in release `.dmg`.
 - Update README install/uninstall sections whenever PlugInKit behavior changes.
 - Add release notes for uninstall-flow changes.
 
@@ -102,6 +102,7 @@ After code changes:
 scripts/verify_project.sh
 VERSION=<version> scripts/package_release.sh
 codesign --verify --deep --strict --verbose=2 "dist/Mac Create File.app"
+hdiutil verify "dist/MacCreateFile-<version>-mac-<arch>.dmg"
 pluginkit -m -v -i com.sdenkrua.MacCreateFileApp.FinderExtension
 ```
 

@@ -2,8 +2,11 @@
 
 ## Unreleased
 
+- Changed release packaging from `.zip` to a drag-to-Applications `.dmg` installer image without changing the app version.
+
 ## 1.1.1 - 2026-05-18
 
+- Release packaging now uses a `.dmg` containing `Mac Create File.app`, an `Applications` shortcut, and `uninstall.command`.
 - Moved the visible app name and version into the macOS window title bar as `Mac Create File v 1.1.1`.
 - Removed the large duplicate in-window `Mac Create File` heading and the separate version line so the content no longer overlaps or clips under the title bar.
 - Added explicit top padding so the content starts below the macOS title bar.

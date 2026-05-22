@@ -8,4 +8,5 @@
 
 ## Changed
 
+- Release packaging now uses a `.dmg` installer image with `Mac Create File.app`, an `Applications` shortcut, and `uninstall.command`.
 - Added explicit top padding so the main content starts below the macOS title bar.

@@ -111,7 +111,7 @@ Implemented in `v1.0.5`:
 - `Disable Finder Extension` button in the main app.
 - `scripts/uninstall.command`.
 - Uninstall instructions in both READMEs.
-- `uninstall.command` included in the release `.zip`.
+- `uninstall.command` included in release packages.
 
 Updated in `v1.0.15`:
 
@@ -276,14 +276,15 @@ VERSION=1.1.1 scripts/package_release.sh
 The project should release:
 
 ```text
-MacCreateFile-<version>-mac-arm64.zip
+MacCreateFile-<version>-mac-arm64.dmg
 ```
 
-The zip should contain:
+The DMG should contain:
 
 ```text
 Mac Create File.app
+Applications
 uninstall.command
 ```
 
-Do not publish `.dmg` unless explicitly requested.
+Use the DMG format for releases by default. Do not publish `.zip` releases unless explicitly requested.
