@@ -4,6 +4,9 @@
 "extensionToggle.title" = "Mac Create File Extension";
 "extensionToggle.enabled" = "Enabled";
 "extensionToggle.disabled" = "Disabled";
+"dockToggle.title" = "Show in Dock";
+"dockToggle.enabled" = "Enabled";
+"dockToggle.disabled" = "Disabled";
 "button.openSettings" = "Open Extension Settings";
 "button.restartFinder" = "Restart Finder";
 "button.uninstall" = "Uninstall Completely";
@@ -14,6 +17,8 @@
 "status.extensionDisabled" = "The Finder extension is disabled. Finder was restarted, and the Create File menu should disappear.";
 "status.openedSettings" = "System Settings opened. Go to Extensions → File Providers and check the Mac Create File switch.";
 "status.finderRestarted" = "Finder was restarted. Try right-clicking in a folder.";
+"status.dockShown" = "Mac Create File is shown in the Dock.";
+"status.dockHidden" = "Mac Create File is hidden from the Dock. To open the window again, launch the app from Applications, Finder, or Spotlight.";
 "status.uninstallCancelled" = "Uninstall cancelled.";
 "status.uninstallReady" = "Mac Create File is disabled and support files were removed. You can now move Mac Create File.app to Trash.";
 "status.uninstallPartial" = "Uninstall finished with warnings:\n%@\nYou can still move Mac Create File.app to Trash, then log out and back in if the Finder menu remains.";

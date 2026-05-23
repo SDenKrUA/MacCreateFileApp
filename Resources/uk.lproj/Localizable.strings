@@ -4,6 +4,9 @@
 "extensionToggle.title" = "Розширення Mac Create File";
 "extensionToggle.enabled" = "Увімкнено";
 "extensionToggle.disabled" = "Вимкнено";
+"dockToggle.title" = "Показувати в Dock";
+"dockToggle.enabled" = "Увімкнено";
+"dockToggle.disabled" = "Вимкнено";
 "button.openSettings" = "Відкрити налаштування розширень";
 "button.restartFinder" = "Перезапустити Finder";
 "button.uninstall" = "Видалити повністю";
@@ -14,6 +17,8 @@
 "status.extensionDisabled" = "Finder extension вимкнено. Finder перезапущено, і меню Створити файл має зникнути.";
 "status.openedSettings" = "Відкрито Системні налаштування. Перейди до Розширення → Постачальники файлу та перевір перемикач Mac Create File.";
 "status.finderRestarted" = "Finder перезапущено. Спробуй натиснути правою кнопкою в папці.";
+"status.dockShown" = "Mac Create File показується в Dock.";
+"status.dockHidden" = "Mac Create File приховано з Dock. Щоб знову відкрити вікно, запусти додаток з Applications, Finder або Spotlight.";
 "status.uninstallCancelled" = "Видалення скасовано.";
 "status.uninstallReady" = "Mac Create File вимкнено, службові файли видалено. Тепер можна перемістити Mac Create File.app у Смітник.";
 "status.uninstallPartial" = "Видалення завершилось із попередженнями:\n%@\nВсе одно можна перемістити Mac Create File.app у Смітник, а якщо меню Finder залишиться — вийти з акаунта і зайти знову.";

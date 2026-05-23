@@ -235,6 +235,13 @@ Changed on 2026-05-23:
 - The static bottom instruction about System Settings was removed. Extension Settings guidance is now shown only when the extension is disabled, when macOS still requires manual approval, or immediately after the user clicks `Open Extension Settings`.
 - Secondary actions now use neutral button styling so the active window no longer makes every action look like the primary blue control.
 
+Changed in `v1.1.3` on 2026-05-23:
+
+- Added a localized `Show in Dock` switch under the Finder extension switch in the main app.
+- The switch stores `showInDock` in `UserDefaults` and applies `.regular` or `.accessory` through `NSApp.setActivationPolicy`.
+- The default remains `Show in Dock = enabled` so existing users see the app in the Dock until they explicitly turn it off.
+- When disabled, the app can still be opened from Applications, Finder, or Spotlight, but it does not keep a Dock icon.
+
 Changed in `v1.1` on 2026-05-18:
 
 - The main app title area now shows the app version from `CFBundleShortVersionString`, so the visible window title tracks release metadata.
@@ -276,7 +283,7 @@ Implemented in `v1.0.17`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.1.2 scripts/package_release.sh
+VERSION=1.1.3 scripts/package_release.sh
 ```
 
 ## Release Shape

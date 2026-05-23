@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.1.3 - 2026-05-23
+
+- Added a localized `Show in Dock` switch to the main app.
+- The app now remembers whether it should appear in the Dock and applies the matching macOS activation policy on launch.
+- Kept release packaging as a drag-to-Applications `.dmg` installer image.
+
 ## 1.1.2 - 2026-05-23
 
 - Replaced separate enable/disable Finder Extension buttons with one Mac Create File extension switch that reflects the current Finder Sync status.

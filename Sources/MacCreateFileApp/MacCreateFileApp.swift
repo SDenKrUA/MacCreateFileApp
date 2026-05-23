@@ -9,7 +9,7 @@ struct MacCreateFileApp: App {
     var body: some Scene {
         WindowGroup(appWindowTitle) {
             ContentView()
-                .frame(width: 620, height: 410)
+                .frame(width: 620, height: 460)
         }
         .defaultPosition(.center)
         .windowResizability(.contentSize)
@@ -23,13 +23,14 @@ struct MacCreateFileApp: App {
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.setActivationPolicy(.regular)
+        DockVisibility.apply(DockVisibility.isShown)
         NSApp.activate(ignoringOtherApps: true)
     }
 }
 
 struct ContentView: View {
     @State private var isExtensionEnabled = FIFinderSyncController.isExtensionEnabled
+    @State private var showInDock = DockVisibility.isShown
     @State private var statusMessage = ""
     @State private var isUpdatingExtension = false
 
@@ -45,7 +46,23 @@ struct ContentView: View {
                         get: { isExtensionEnabled },
                         set: { setExtensionEnabled($0) }
                     ),
+                    titleKey: "extensionToggle.title",
+                    enabledKey: "extensionToggle.enabled",
+                    disabledKey: "extensionToggle.disabled",
+                    systemImage: "puzzlepiece.extension",
                     isDisabled: isUpdatingExtension
+                )
+
+                ExtensionToggleRow(
+                    isOn: Binding(
+                        get: { showInDock },
+                        set: { setShowInDock($0) }
+                    ),
+                    titleKey: "dockToggle.title",
+                    enabledKey: "dockToggle.enabled",
+                    disabledKey: "dockToggle.disabled",
+                    systemImage: "dock.rectangle",
+                    isDisabled: false
                 )
 
                 ActionButton(title: String(localized: "button.openSettings"), systemImage: "gearshape") {
@@ -79,6 +96,7 @@ struct ContentView: View {
         .background(WindowTitleSetter(title: windowTitle))
         .onAppear {
             refreshExtensionStatus()
+            showInDock = DockVisibility.isShown
         }
     }
 
@@ -105,6 +123,14 @@ struct ContentView: View {
 
         isExtensionEnabled = FIFinderSyncController.isExtensionEnabled
         isUpdatingExtension = false
+    }
+
+    private func setShowInDock(_ shown: Bool) {
+        showInDock = shown
+        DockVisibility.setShown(shown)
+        statusMessage = shown
+            ? String(localized: "status.dockShown")
+            : String(localized: "status.dockHidden")
     }
 
     private func enableExtension() {
@@ -281,19 +307,23 @@ struct ActionButton: View {
 
 struct ExtensionToggleRow: View {
     @Binding var isOn: Bool
+    let titleKey: LocalizedStringKey
+    let enabledKey: LocalizedStringKey
+    let disabledKey: LocalizedStringKey
+    let systemImage: String
     let isDisabled: Bool
 
     var body: some View {
         HStack(spacing: 14) {
-            Image(systemName: "puzzlepiece.extension")
+            Image(systemName: systemImage)
                 .font(.title3)
                 .foregroundStyle(.secondary)
                 .frame(width: 28)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("extensionToggle.title")
+                Text(titleKey)
                     .font(.body.weight(.medium))
-                Text(isOn ? "extensionToggle.enabled" : "extensionToggle.disabled")
+                Text(isOn ? enabledKey : disabledKey)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
@@ -312,6 +342,26 @@ struct ExtensionToggleRow: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color(nsColor: .separatorColor), lineWidth: 0.5)
         )
+    }
+}
+
+enum DockVisibility {
+    private static let key = "showInDock"
+
+    static var isShown: Bool {
+        if UserDefaults.standard.object(forKey: key) == nil {
+            return true
+        }
+        return UserDefaults.standard.bool(forKey: key)
+    }
+
+    static func setShown(_ shown: Bool) {
+        UserDefaults.standard.set(shown, forKey: key)
+        apply(shown)
+    }
+
+    static func apply(_ shown: Bool) {
+        NSApp.setActivationPolicy(shown ? .regular : .accessory)
     }
 }
 
