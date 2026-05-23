@@ -178,6 +178,12 @@ Updated in `v1.0.20`:
 - The front document now has a larger folded corner and lighter internal fold line.
 - `Copy Path` uses a partial back-document hint so it reads as one document in front of another instead of two full overlapping outlines.
 
+Fixed in `v1.1.5` on 2026-05-23:
+
+- Finder Sync menu and toolbar icons could remain black in dark mode after the `v1.1` switch back to SF Symbols, making `Create File`, `Copy Path`, and `Open Terminal Here` hard to see on dark Finder menus.
+- The extension now keeps the SF Symbol shapes (`doc.badge.plus`, `doc`, `doc.on.doc`, and `terminal`) but renders them into non-template 16x16 tinted images before giving them to Finder.
+- The icon renderer chooses a light color in dark mode and a dark color in light mode. The older custom outline renderer remains only as a fallback when an SF Symbol is unavailable.
+
 ## Cloud Folder Coverage
 
 Updated in `v1.0.20`:
@@ -289,7 +295,7 @@ Implemented in `v1.0.17`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.1.4 scripts/package_release.sh
+VERSION=1.1.5 scripts/package_release.sh
 ```
 
 ## Release Shape

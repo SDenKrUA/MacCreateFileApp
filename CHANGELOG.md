@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.1.5 - 2026-05-23
+
+- Fixed Finder menu and toolbar icons staying black in dark mode while keeping the newer SF Symbol shapes.
+- Finder extension icons are now rendered as non-template tinted images so the extension controls the light or dark color Finder displays.
+
 ## 1.1.4 - 2026-05-23
 
 - Restyled the main app toggles into one compact system-style settings group.

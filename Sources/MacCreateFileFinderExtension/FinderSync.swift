@@ -51,7 +51,7 @@ final class FinderSync: FIFinderSync {
     }
 
     override var toolbarItemImage: NSImage {
-        systemIcon("doc.badge.plus", fallback: .createFile)
+        systemTintedIcon("doc.badge.plus", fallback: .createFile)
     }
 
     override func beginObservingDirectory(at url: URL) {
@@ -418,17 +418,34 @@ final class FinderSync: FIFinderSync {
             symbolName = "terminal"
         }
 
-        return systemIcon(symbolName, fallback: kind)
+        return systemTintedIcon(symbolName, fallback: kind)
     }
 
-    private func systemIcon(_ symbolName: String, fallback kind: MenuIconKind) -> NSImage {
-        if let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: localized(kind.accessibilityKey)) {
-            image.size = NSSize(width: 16, height: 16)
-            image.isTemplate = true
-            return image
+    private func systemTintedIcon(_ symbolName: String, fallback kind: MenuIconKind) -> NSImage {
+        guard let symbol = NSImage(systemSymbolName: symbolName, accessibilityDescription: localized(kind.accessibilityKey)) else {
+            return drawnFallbackIcon(kind)
         }
 
-        return drawnFallbackIcon(kind)
+        let size = NSSize(width: 16, height: 16)
+        let image = NSImage(size: size)
+        image.lockFocus()
+
+        let rect = CGRect(origin: .zero, size: size)
+        symbol.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1.0)
+        menuIconColor.setFill()
+        rect.fill(using: .sourceAtop)
+
+        image.unlockFocus()
+        image.accessibilityDescription = localized(kind.accessibilityKey)
+        image.isTemplate = false
+        return image
+    }
+
+    private var menuIconColor: NSColor {
+        let isDarkMode = NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+        return isDarkMode
+            ? NSColor(calibratedWhite: 0.92, alpha: 1.0)
+            : NSColor(calibratedWhite: 0.12, alpha: 1.0)
     }
 
     private func drawnFallbackIcon(_ kind: MenuIconKind) -> NSImage {
@@ -436,11 +453,7 @@ final class FinderSync: FIFinderSync {
         let image = NSImage(size: size)
         image.lockFocus()
 
-        let isDarkMode = NSApp.effectiveAppearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
-        let color = isDarkMode
-            ? NSColor(calibratedWhite: 0.92, alpha: 1.0)
-            : NSColor(calibratedWhite: 0.12, alpha: 1.0)
-        color.setStroke()
+        menuIconColor.setStroke()
 
         let lineWidth: CGFloat = 1.15
         switch kind {
@@ -476,6 +489,7 @@ final class FinderSync: FIFinderSync {
 
         image.unlockFocus()
         image.accessibilityDescription = localized(kind.accessibilityKey)
+        image.isTemplate = false
         return image
     }
 

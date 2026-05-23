@@ -107,13 +107,13 @@ scripts/install_local.sh
 ## Релізний пакет
 
 ```sh
-VERSION=1.1.4 scripts/package_release.sh
+VERSION=1.1.5 scripts/package_release.sh
 ```
 
 Файли релізу створюються у `dist/`:
 
 ```text
-MacCreateFile-1.1.4-mac-<arch>.dmg
+MacCreateFile-1.1.5-mac-<arch>.dmg
 ```
 
 ## Що всередині
