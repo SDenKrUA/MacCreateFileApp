@@ -9,7 +9,7 @@ struct MacCreateFileApp: App {
     var body: some Scene {
         WindowGroup(appWindowTitle) {
             ContentView()
-                .frame(width: 620, height: 460)
+                .frame(width: 620, height: 420)
         }
         .defaultPosition(.center)
         .windowResizability(.contentSize)
@@ -40,30 +40,31 @@ struct ContentView: View {
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            VStack(alignment: .leading, spacing: 14) {
-                ExtensionToggleRow(
-                    isOn: Binding(
-                        get: { isExtensionEnabled },
-                        set: { setExtensionEnabled($0) }
-                    ),
-                    titleKey: "extensionToggle.title",
-                    enabledKey: "extensionToggle.enabled",
-                    disabledKey: "extensionToggle.disabled",
-                    systemImage: "puzzlepiece.extension",
-                    isDisabled: isUpdatingExtension
-                )
+            VStack(alignment: .leading, spacing: 12) {
+                SettingsToggleGroup {
+                    SettingsToggleRow(
+                        isOn: Binding(
+                            get: { isExtensionEnabled },
+                            set: { setExtensionEnabled($0) }
+                        ),
+                        titleKey: "extensionToggle.title",
+                        systemImage: "puzzlepiece.extension",
+                        isDisabled: isUpdatingExtension
+                    )
 
-                ExtensionToggleRow(
-                    isOn: Binding(
-                        get: { showInDock },
-                        set: { setShowInDock($0) }
-                    ),
-                    titleKey: "dockToggle.title",
-                    enabledKey: "dockToggle.enabled",
-                    disabledKey: "dockToggle.disabled",
-                    systemImage: "dock.rectangle",
-                    isDisabled: false
-                )
+                    Divider()
+                        .padding(.leading, 56)
+
+                    SettingsToggleRow(
+                        isOn: Binding(
+                            get: { showInDock },
+                            set: { setShowInDock($0) }
+                        ),
+                        titleKey: "dockToggle.title",
+                        systemImage: "dock.rectangle",
+                        isDisabled: false
+                    )
+                }
 
                 ActionButton(title: String(localized: "button.openSettings"), systemImage: "gearshape") {
                     openExtensionSettings()
@@ -305,11 +306,24 @@ struct ActionButton: View {
     }
 }
 
-struct ExtensionToggleRow: View {
+struct SettingsToggleGroup<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(spacing: 0) {
+            content
+        }
+        .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(nsColor: .separatorColor), lineWidth: 0.5)
+        )
+    }
+}
+
+struct SettingsToggleRow: View {
     @Binding var isOn: Bool
     let titleKey: LocalizedStringKey
-    let enabledKey: LocalizedStringKey
-    let disabledKey: LocalizedStringKey
     let systemImage: String
     let isDisabled: Bool
 
@@ -320,13 +334,8 @@ struct ExtensionToggleRow: View {
                 .foregroundStyle(.secondary)
                 .frame(width: 28)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(titleKey)
-                    .font(.body.weight(.medium))
-                Text(isOn ? enabledKey : disabledKey)
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-            }
+            Text(titleKey)
+                .font(.body.weight(.medium))
 
             Spacer()
 
@@ -336,12 +345,7 @@ struct ExtensionToggleRow: View {
                 .disabled(isDisabled)
         }
         .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 8))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color(nsColor: .separatorColor), lineWidth: 0.5)
-        )
+        .frame(minHeight: 44)
     }
 }
 

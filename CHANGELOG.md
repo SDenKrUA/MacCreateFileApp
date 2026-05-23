@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.1.4 - 2026-05-23
+
+- Restyled the main app toggles into one compact system-style settings group.
+- Removed the redundant enabled/disabled text under toggles because the switch state already communicates it visually.
+- Kept release packaging as a drag-to-Applications `.dmg` installer image.
+
 ## 1.1.3 - 2026-05-23
 
 - Added a localized `Show in Dock` switch to the main app.

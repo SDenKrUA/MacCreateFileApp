@@ -242,6 +242,12 @@ Changed in `v1.1.3` on 2026-05-23:
 - The default remains `Show in Dock = enabled` so existing users see the app in the Dock until they explicitly turn it off.
 - When disabled, the app can still be opened from Applications, Finder, or Spotlight, but it does not keep a Dock icon.
 
+Changed in `v1.1.4` on 2026-05-23:
+
+- Restyled the main app's `Mac Create File Extension` and `Show in Dock` toggles as one compact settings group.
+- Removed the redundant enabled/disabled subtitle from each toggle row so the switch itself is the only state indicator.
+- Added a single separator between the two toggle rows and reduced the main window height after removing the extra vertical space.
+
 Changed in `v1.1` on 2026-05-18:
 
 - The main app title area now shows the app version from `CFBundleShortVersionString`, so the visible window title tracks release metadata.
@@ -283,7 +289,7 @@ Implemented in `v1.0.17`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.1.3 scripts/package_release.sh
+VERSION=1.1.4 scripts/package_release.sh
 ```
 
 ## Release Shape

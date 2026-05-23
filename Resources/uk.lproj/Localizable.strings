@@ -2,11 +2,7 @@
 "app.subtitle" = "Додає у Finder меню для створення нових файлів у поточній папці.";
 "app.toolbarHint" = "Якщо меню не зʼявляється у правій кнопці Finder, додай Mac Create File на панель інструментів Finder через налаштування панелі. Меню з панелі інструментів доступне навіть у папках, де macOS не показує extension у меню правої кнопки.";
 "extensionToggle.title" = "Розширення Mac Create File";
-"extensionToggle.enabled" = "Увімкнено";
-"extensionToggle.disabled" = "Вимкнено";
 "dockToggle.title" = "Показувати в Dock";
-"dockToggle.enabled" = "Увімкнено";
-"dockToggle.disabled" = "Вимкнено";
 "button.openSettings" = "Відкрити налаштування розширень";
 "button.restartFinder" = "Перезапустити Finder";
 "button.uninstall" = "Видалити повністю";

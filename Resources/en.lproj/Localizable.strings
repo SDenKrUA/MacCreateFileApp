@@ -2,11 +2,7 @@
 "app.subtitle" = "Adds a Finder menu for creating new files in the current folder.";
 "app.toolbarHint" = "If the menu does not appear in Finder's right-click menu, add Mac Create File to the Finder toolbar from Finder's toolbar customization screen. The toolbar menu is available even in folders where macOS does not show the right-click extension menu.";
 "extensionToggle.title" = "Mac Create File Extension";
-"extensionToggle.enabled" = "Enabled";
-"extensionToggle.disabled" = "Disabled";
 "dockToggle.title" = "Show in Dock";
-"dockToggle.enabled" = "Enabled";
-"dockToggle.disabled" = "Disabled";
 "button.openSettings" = "Open Extension Settings";
 "button.restartFinder" = "Restart Finder";
 "button.uninstall" = "Uninstall Completely";
