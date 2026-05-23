@@ -227,6 +227,14 @@ Changed in `v1.1.1` on 2026-05-18:
 - The window title is now set as `Mac Create File v <CFBundleShortVersionString>`, with an `NSViewRepresentable` applying the title to the attached `NSWindow`, so the app name and version appear in the top window chrome instead of inside the content.
 - The main content now uses explicit top padding so the subtitle and controls start below the macOS title bar instead of sliding underneath it.
 
+Changed on 2026-05-23:
+
+- Replaced the separate `Enable Finder Extension` and `Disable Finder Extension` buttons with one `Mac Create File Extension` switch in the main app.
+- The switch runs the same `pluginkit -a` / `pluginkit -e use` enable flow and `pluginkit -e ignore` disable flow that the old buttons used, then restarts Finder and refreshes `FIFinderSyncController.isExtensionEnabled`.
+- The app now checks Finder Sync status on launch, so it no longer tells the user to enable the extension when macOS already reports it enabled.
+- The static bottom instruction about System Settings was removed. Extension Settings guidance is now shown only when the extension is disabled, when macOS still requires manual approval, or immediately after the user clicks `Open Extension Settings`.
+- Secondary actions now use neutral button styling so the active window no longer makes every action look like the primary blue control.
+
 Changed in `v1.1` on 2026-05-18:
 
 - The main app title area now shows the app version from `CFBundleShortVersionString`, so the visible window title tracks release metadata.
@@ -268,7 +276,7 @@ Implemented in `v1.0.17`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.1.1 scripts/package_release.sh
+VERSION=1.1.2 scripts/package_release.sh
 ```
 
 ## Release Shape

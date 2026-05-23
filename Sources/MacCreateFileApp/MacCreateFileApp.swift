@@ -29,7 +29,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 struct ContentView: View {
-    @State private var statusMessage = String(localized: "status.ready")
+    @State private var isExtensionEnabled = FIFinderSyncController.isExtensionEnabled
+    @State private var statusMessage = ""
+    @State private var isUpdatingExtension = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -37,13 +39,15 @@ struct ContentView: View {
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
-            VStack(alignment: .leading, spacing: 12) {
-                ActionButton(title: String(localized: "button.enableExtension"), systemImage: "puzzlepiece.extension") {
-                    enableExtension()
-                }
-                ActionButton(title: String(localized: "button.disableExtension"), systemImage: "puzzlepiece.extension.fill") {
-                    disableExtension()
-                }
+            VStack(alignment: .leading, spacing: 14) {
+                ExtensionToggleRow(
+                    isOn: Binding(
+                        get: { isExtensionEnabled },
+                        set: { setExtensionEnabled($0) }
+                    ),
+                    isDisabled: isUpdatingExtension
+                )
+
                 ActionButton(title: String(localized: "button.openSettings"), systemImage: "gearshape") {
                     openExtensionSettings()
                 }
@@ -73,11 +77,34 @@ struct ContentView: View {
         .padding(.top, 56)
         .padding(.bottom, 28)
         .background(WindowTitleSetter(title: windowTitle))
+        .onAppear {
+            refreshExtensionStatus()
+        }
     }
 
     private var windowTitle: String {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
         return "Mac Create File v \(version ?? "unknown")"
+    }
+
+    private func refreshExtensionStatus() {
+        isExtensionEnabled = FIFinderSyncController.isExtensionEnabled
+        statusMessage = isExtensionEnabled
+            ? String(localized: "status.extensionAlreadyEnabled")
+            : String(localized: "status.extensionAlreadyDisabled")
+    }
+
+    private func setExtensionEnabled(_ enabled: Bool) {
+        isUpdatingExtension = true
+
+        if enabled {
+            enableExtension()
+        } else {
+            disableExtension()
+        }
+
+        isExtensionEnabled = FIFinderSyncController.isExtensionEnabled
+        isUpdatingExtension = false
     }
 
     private func enableExtension() {
@@ -109,9 +136,11 @@ struct ContentView: View {
         _ = Shell.run("/usr/bin/killall", arguments: ["Finder"])
 
         if FIFinderSyncController.isExtensionEnabled {
+            isExtensionEnabled = true
             statusMessage = String(localized: "status.extensionEnabled")
         } else {
             openExtensionSettings()
+            isExtensionEnabled = false
             statusMessage = String(localized: "status.extensionEnabledNeedsSettings")
         }
     }
@@ -128,6 +157,7 @@ struct ContentView: View {
         }
 
         _ = Shell.run("/usr/bin/killall", arguments: ["Finder"])
+        isExtensionEnabled = false
         statusMessage = String(localized: "status.extensionDisabled")
     }
 
@@ -244,8 +274,44 @@ struct ActionButton: View {
             Label(title, systemImage: systemImage)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.bordered)
         .controlSize(.large)
+    }
+}
+
+struct ExtensionToggleRow: View {
+    @Binding var isOn: Bool
+    let isDisabled: Bool
+
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "puzzlepiece.extension")
+                .font(.title3)
+                .foregroundStyle(.secondary)
+                .frame(width: 28)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("extensionToggle.title")
+                    .font(.body.weight(.medium))
+                Text(isOn ? "extensionToggle.enabled" : "extensionToggle.disabled")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Toggle("", isOn: $isOn)
+                .labelsHidden()
+                .toggleStyle(.switch)
+                .disabled(isDisabled)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 8))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color(nsColor: .separatorColor), lineWidth: 0.5)
+        )
     }
 }
 

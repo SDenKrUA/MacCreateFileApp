@@ -27,13 +27,13 @@ Mac Create File is a macOS utility that adds Finder menus for creating new files
 2. Open the `.dmg`.
 3. Drag `Mac Create File.app` to the `Applications` folder in the DMG window.
 4. Open `Applications/Mac Create File.app`.
-5. Click `Enable Finder Extension`.
-6. If macOS still requires manual confirmation, the app opens Extension Settings automatically. Enable `Mac Create File Finder Extension` there.
+5. Turn on the `Mac Create File Extension` switch.
+6. If macOS still requires manual confirmation, open Extension Settings and enable `Mac Create File` under `Extensions > File Providers`.
 7. Restart Finder from the app, or log out and back in.
 8. Right-click inside a Finder folder and choose `Create File`.
 9. Optional: in Finder, open toolbar customization and drag `Mac Create File` into the toolbar.
 
-macOS does not allow third-party apps to silently grant every Finder extension permission. Mac Create File registers and requests the extension, opens the correct settings screen when needed, and then waits for the user-approved macOS toggle.
+macOS does not allow third-party apps to silently grant every Finder extension permission. Mac Create File registers and requests the extension, shows the current extension state in the app switch, opens the settings screen when requested, and then waits for the user-approved macOS toggle when the system requires it.
 
 ## Cloud Folders and Finder Toolbar
 
@@ -107,13 +107,13 @@ scripts/install_local.sh
 ## Package a Release
 
 ```sh
-VERSION=1.1.1 scripts/package_release.sh
+VERSION=1.1.2 scripts/package_release.sh
 ```
 
 Release artifacts are created in `dist/`:
 
 ```text
-MacCreateFile-1.1.1-mac-<arch>.dmg
+MacCreateFile-1.1.2-mac-<arch>.dmg
 ```
 
 ## Signing

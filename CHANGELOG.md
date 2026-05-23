@@ -2,7 +2,12 @@
 
 ## Unreleased
 
-- Changed release packaging from `.zip` to a drag-to-Applications `.dmg` installer image without changing the app version.
+## 1.1.2 - 2026-05-23
+
+- Replaced separate enable/disable Finder Extension buttons with one Mac Create File extension switch that reflects the current Finder Sync status.
+- The main app now checks the Finder extension state on launch and shows enabled/disabled guidance only when it matches the real state.
+- Reworded Extension Settings guidance so it appears only after opening settings or when manual macOS approval is still required.
+- Kept release packaging as a drag-to-Applications `.dmg` installer image.
 
 ## 1.1.1 - 2026-05-18
 
