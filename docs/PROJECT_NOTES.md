@@ -180,9 +180,24 @@ Updated in `v1.0.20`:
 
 Fixed in `v1.1.5` on 2026-05-23:
 
-- Finder Sync menu and toolbar icons could remain black in dark mode after the `v1.1` switch back to SF Symbols, making `Create File`, `Copy Path`, and `Open Terminal Here` hard to see on dark Finder menus.
-- The extension now keeps the SF Symbol shapes (`doc.badge.plus`, `doc`, `doc.on.doc`, and `terminal`) but renders them into non-template 16x16 tinted images before giving them to Finder.
-- The icon renderer chooses a light color in dark mode and a dark color in light mode. The older custom outline renderer remains only as a fallback when an SF Symbol is unavailable.
+- Finder Sync menu icons could remain black in dark mode after the `v1.1` switch back to SF Symbols, making `Create File`, `Copy Path`, and `Open Terminal Here` hard to see on dark Finder menus.
+- The extension now keeps the menu SF Symbol shapes (`doc`, `doc.on.doc`, and `terminal`) but renders them into non-template 16x16 tinted images before giving them to Finder.
+- The menu icon renderer chooses a light color in dark mode and a dark color in light mode. The Finder toolbar icon remains a template `doc.badge.plus` SF Symbol so Finder can tint the toolbar button itself.
+- The older custom outline renderer remains only as a fallback when an SF Symbol is unavailable.
+
+Preserved after `v1.1.5` on 2026-05-24:
+
+- Do not merge the menu and toolbar icon paths. They intentionally solve different Finder rendering behavior.
+- Finder menu item icons must use SF Symbol shapes rendered into non-template tinted images through `systemTintedIcon(...)`; Finder does not reliably tint menu SF Symbols in dark mode.
+- The Finder toolbar button must use `toolbarIcon(...)`, which returns the `doc.badge.plus` SF Symbol as a template image. Finder toolbar controls tint template icons correctly for light mode, dark mode, hover, and pressed states.
+- If toolbar and menu icons regress, check `toolbarItemImage`, `menuIcon(...)`, `toolbarIcon(...)`, and `systemTintedIcon(...)` before changing the drawing fallback.
+
+Fixed after `v1.1.5` on 2026-05-24:
+
+- When `Show in Dock` was off, reinstalling and launching the app could briefly create a regular app Dock tile even though the toggle still showed off.
+- The app now applies the saved Dock visibility preference in `applicationWillFinishLaunching`, again in `applicationDidFinishLaunching`, and once more after the SwiftUI content appears. This keeps the persisted toggle state and real Dock presence aligned after reinstall.
+- Local reinstall testing found a second edge case: replacing `/Applications/Mac Create File.app` while an older app process is still running can leave macOS showing the old process and old window title even after the bundle on disk has been updated.
+- `scripts/install_local.sh` now runs `pkill -x MacCreateFileApp` before replacing the app bundle, waits briefly, and then opens the newly installed app. This ensures Dock visibility and window title checks are testing the new process, not a stale pre-reinstall process.
 
 ## Cloud Folder Coverage
 
@@ -295,7 +310,7 @@ Implemented in `v1.0.17`:
 
 ```sh
 scripts/verify_project.sh
-VERSION=1.1.5 scripts/package_release.sh
+VERSION=1.1.6 scripts/package_release.sh
 ```
 
 ## Release Shape

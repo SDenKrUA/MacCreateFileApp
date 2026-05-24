@@ -22,8 +22,12 @@ struct MacCreateFileApp: App {
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        DockVisibility.applySavedPreference()
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
-        DockVisibility.apply(DockVisibility.isShown)
+        DockVisibility.applySavedPreference()
         NSApp.activate(ignoringOtherApps: true)
     }
 }
@@ -98,6 +102,7 @@ struct ContentView: View {
         .onAppear {
             refreshExtensionStatus()
             showInDock = DockVisibility.isShown
+            DockVisibility.applySavedPreference()
         }
     }
 
@@ -362,6 +367,14 @@ enum DockVisibility {
     static func setShown(_ shown: Bool) {
         UserDefaults.standard.set(shown, forKey: key)
         apply(shown)
+    }
+
+    static func applySavedPreference() {
+        let shown = isShown
+        apply(shown)
+        DispatchQueue.main.async {
+            apply(shown)
+        }
     }
 
     static func apply(_ shown: Bool) {

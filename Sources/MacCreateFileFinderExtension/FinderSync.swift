@@ -51,7 +51,7 @@ final class FinderSync: FIFinderSync {
     }
 
     override var toolbarItemImage: NSImage {
-        systemTintedIcon("doc.badge.plus", fallback: .createFile)
+        toolbarIcon("doc.badge.plus", fallback: .createFile)
     }
 
     override func beginObservingDirectory(at url: URL) {
@@ -419,6 +419,16 @@ final class FinderSync: FIFinderSync {
         }
 
         return systemTintedIcon(symbolName, fallback: kind)
+    }
+
+    private func toolbarIcon(_ symbolName: String, fallback kind: MenuIconKind) -> NSImage {
+        guard let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: localized(kind.accessibilityKey)) else {
+            return drawnFallbackIcon(kind)
+        }
+
+        image.size = NSSize(width: 16, height: 16)
+        image.isTemplate = true
+        return image
     }
 
     private func systemTintedIcon(_ symbolName: String, fallback kind: MenuIconKind) -> NSImage {

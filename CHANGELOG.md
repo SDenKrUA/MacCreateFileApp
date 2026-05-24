@@ -2,10 +2,17 @@
 
 ## Unreleased
 
+## 1.1.6 - 2026-05-24
+
+- Documented and preserved the split between manually tinted Finder menu icons and Finder-tinted toolbar template icons.
+- Re-applied the saved Dock visibility preference during launch and after the SwiftUI window appears so reinstalling the app does not leave a stale Dock icon when `Show in Dock` is off.
+- Updated the local install script to quit any running Mac Create File process before replacing `/Applications/Mac Create File.app`, preventing old processes from surviving a reinstall with stale Dock behavior.
+
 ## 1.1.5 - 2026-05-23
 
-- Fixed Finder menu and toolbar icons staying black in dark mode while keeping the newer SF Symbol shapes.
-- Finder extension icons are now rendered as non-template tinted images so the extension controls the light or dark color Finder displays.
+- Fixed Finder menu icons staying black in dark mode while keeping the newer SF Symbol shapes.
+- Finder menu icons are now rendered as non-template tinted images so the extension controls the light or dark color Finder displays.
+- Kept the Finder toolbar icon as a template SF Symbol so Finder can tint the toolbar button correctly in light and dark mode.
 
 ## 1.1.4 - 2026-05-23
 

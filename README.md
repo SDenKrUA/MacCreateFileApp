@@ -107,13 +107,13 @@ scripts/install_local.sh
 ## Package a Release
 
 ```sh
-VERSION=1.1.5 scripts/package_release.sh
+VERSION=1.1.6 scripts/package_release.sh
 ```
 
 Release artifacts are created in `dist/`:
 
 ```text
-MacCreateFile-1.1.5-mac-<arch>.dmg
+MacCreateFile-1.1.6-mac-<arch>.dmg
 ```
 
 ## Signing
